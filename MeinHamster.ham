@@ -88,12 +88,16 @@ class MeinHamster extends Hamster {
 		meinRechtsUm();
 		meinRechtsUm();
 	}
-	
+	/**
+	 * Speichert den Weg der gelaufen wurde
+	 */
 	void speichereWeg(){
         memory.push(super.getBlickrichtung());     
        
     }
-    
+    /**
+	 * Läuft einen Schritt der gespeichert wurde zurück
+	 */
 	void schrittZurueck(){
         int richtungLetzterSchritt = memory.pop();
         int blickrichtung = super.getBlickrichtung();
@@ -107,9 +111,11 @@ class MeinHamster extends Hamster {
         }
         
         while (richtungLetzterSchritt != blickrichtung) {
-            linksUm();
+            meinLinksUm();
             blickrichtung = super.getBlickrichtung();
         }
+        //meinVor() kann nicht verwendet werden, da sonst wieder der Weg gespeichert wird
         vor();
+        akku.reduziereLadung();
     }
 }

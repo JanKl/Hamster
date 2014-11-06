@@ -47,15 +47,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 			super.vor();
 			speichereWeg();
 			akku.reduziereLadung();
-			
-			if (akku.gibLadung() == 550) {
-				schrittZurueck();
-				schrittZurueck();
-				schrittZurueck();
-				schrittZurueck();
-				schrittZurueck();
-			}
-			
+		
 			// Sammle ein Korn auf, falls auf diesem Feld vorhanden
 			if (super.kornDa())  {
 				super.nimm();
@@ -96,12 +88,16 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 		meinRechtsUm();
 		meinRechtsUm();
 	}
-	
+	/**
+	 * Speichert den Weg der gelaufen wurde
+	 */
 	void speichereWeg(){
         memory.push(super.getBlickrichtung());     
        
     }
-    
+    /**
+	 * Läuft einen Schritt der gespeichert wurde zurück
+	 */
 	void schrittZurueck(){
         int richtungLetzterSchritt = memory.pop();
         int blickrichtung = super.getBlickrichtung();
@@ -115,9 +111,11 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         }
         
         while (richtungLetzterSchritt != blickrichtung) {
-            linksUm();
+            meinLinksUm();
             blickrichtung = super.getBlickrichtung();
         }
+        //meinVor() kann nicht verwendet werden, da sonst wieder der Weg gespeichert wird
         vor();
+        akku.reduziereLadung();
     }
 }
