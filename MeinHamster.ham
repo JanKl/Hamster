@@ -88,6 +88,9 @@ class MeinHamster extends Hamster {
         }
     }
 
+	/**
+	 * Dreht den Hamster um und reduziert die Akkuladung.
+	 */
     void meinDreheUm() {
         meinRechtsUm();
         meinRechtsUm();
@@ -385,8 +388,31 @@ class MeinHamster extends Hamster {
                 schrittZurueck();
             }
         }
+        
+        /*
+         * Wenn auf den letzten 10 besuchten Feldern keine Körner mehr liegen,
+         * soll der Hamster zufällig eine andere Richtung einschlagen. Wir er-
+         * hoffen uns davon, dass über eine Zufallskomponente alle Felder ein-
+         * mal besucht werden. Zumindest aber soll so verhindert werden, dass
+         * immer der selbe leere Bereich abgesucht wird, wenn es noch Bereiche
+         * mit Körnern gibt.
+         * !memory.priefKoerner ergibt true, wenn die letzten 10 Felder leer
+         * waren.
+         */
         if (!memory.pruefeKoerner()){
+        	/*
+        	 * Jetzt soll aus den Richtungen links, vorn und rechts zufällig
+        	 * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in
+        	 * die Auswahl, bei denen der Hamster anschließend nicht direkt vor
+        	 * einer Mauer stehen würde.
+        	 * Zurück ist zunächst keine Option, da ja genau dort zuletzt auch
+        	 * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei
+        	 * links, vorn und rechts höher.
+        	 */
+        	
         	meinRechtsUm();
+        	
+        	// Was macht das hier?
         	memory.initKoernerArray();
         }
         
