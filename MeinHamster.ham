@@ -1,4 +1,7 @@
-/*class*//**
+/*class*/import java.util.ArrayList;
+import java.util.Random;
+
+/**
  * MeinHamster-Klasse von Kai Holzer und Jan Kleinekort Erweitert die
  * Hamster-Klasse.
  */
@@ -47,13 +50,19 @@ class MeinHamster extends Hamster {
     void meinVor() {
         if (akku.hatLadung()) {
             // Ziehe zunächst ein Feld vor und reduziere den Ladezustand des Akkus
-            super.vor();
-            akku.reduziereLadung();
 
-            // Sammle ein Korn auf, falls auf diesem Feld vorhanden
-            if (super.kornDa()) {
-                super.nimm();
-            }
+            // Prüfe vor dem Zug, ob eine Mauer da ist, um eine Exception zu vermeiden
+			if (istMauerDa(Richtung.Geradeaus)) {
+				super.schreib("Mauer vorne, Hamster will keine platte Nase.");
+			} else {
+	            super.vor();
+	            akku.reduziereLadung();
+
+            	// Sammle ein Korn auf, falls auf diesem Feld vorhanden
+        	    if (super.kornDa()) {
+    	            super.nimm();
+	            }
+	        }
 
         } else {
             super.schreib("Akku leer :-(");
@@ -92,8 +101,8 @@ class MeinHamster extends Hamster {
 	 * Dreht den Hamster um und reduziert die Akkuladung.
 	 */
     void meinDreheUm() {
-        meinRechtsUm();
-        meinRechtsUm();
+        meinLinksUm();
+        meinLinksUm();
     }
 
     /**
@@ -138,7 +147,7 @@ class MeinHamster extends Hamster {
     void scanTerritorium() {
 
         // Den Array mit 0 initialisieren bzw. resetten
-        initialiereScannedTerritorium();
+        initialisiereScannedTerritorium();
         int[][] umgebung = getPositions();
 
         // 0 0 0 0 0
@@ -305,7 +314,7 @@ class MeinHamster extends Hamster {
      * Belegt den Array für das gescannte Gebiet komplett mit 0.
      *     
 */
-    void initialiereScannedTerritorium() {
+    void initialisiereScannedTerritorium() {
         for (int i = 0; i < scannedTerritorium.length; i++) {
             for (int j = 0; j < scannedTerritorium[0].length; j++) {
                 scannedTerritorium[i][j] = 0;
@@ -396,26 +405,138 @@ class MeinHamster extends Hamster {
          * mal besucht werden. Zumindest aber soll so verhindert werden, dass
          * immer der selbe leere Bereich abgesucht wird, wenn es noch Bereiche
          * mit Körnern gibt.
-         * !memory.priefKoerner ergibt true, wenn die letzten 10 Felder leer
+         * !memory.pruefeKoerner ergibt true, wenn die letzten 10 Felder leer
          * waren.
          */
         if (!memory.pruefeKoerner()){
         	/*
-        	 * Jetzt soll aus den Richtungen links, vorn und rechts zufällig
-        	 * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in
-        	 * die Auswahl, bei denen der Hamster anschließend nicht direkt vor
-        	 * einer Mauer stehen würde.
+        	 * Jetzt soll aus den Richtungen links, geradeaus und rechts zufällig
+        	 * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in die
+        	 * Auswahl, bei denen der Hamster anschließend nicht direkt vor einer
+        	 * Mauer stehen würde.
         	 * Zurück ist zunächst keine Option, da ja genau dort zuletzt auch
-        	 * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei
-        	 * links, vorn und rechts höher.
+        	 * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei links,
+        	 * geradeaus und rechts höher.
         	 */
         	
-        	meinRechtsUm();
+        	// Initialisiere Array infrage kommender Drehrichtungen.
+        	ArrayList<Richtung> drehrichtungen = new ArrayList();
         	
+        	// Prüfe infrage kommende Werte.
+        	if (!istMauerDa(Richtung.Links)) {
+        		drehrichtungen.add(Richtung.Links);
+        	}
+        	
+        	if (!istMauerDa(Richtung.Geradeaus)) {
+        		drehrichtungen.add(Richtung.Geradeaus);
+        	}
+        	
+        	if (!istMauerDa(Richtung.Rechts)) {
+        		drehrichtungen.add(Richtung.Rechts);
+        	}
+        	
+        	// Fall 0: Es wurden gar keine möglichen Drehrichtungen gefunden.
+        	// Dann: Drehe um und gehe zurück.
+        	if (drehrichtungen.size() == 0) {
+	        	dreheHamsterInRichtung(Richtung.Zurueck);
+	        	
+	        	// DEBUG von hier
+	        	super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
+	        	// DEBUG bis hier
+        	}
+        	
+        	// Fall 1: Es wurden nur eine mögliche Drehrichtung gefunden.
+        	// Dann: Wähle diese Richtung.
+        	if (drehrichtungen.size() == 1) {
+	        	dreheHamsterInRichtung(drehrichtungen.get(0));
+	        	
+	        	// DEBUG von hier
+	        	super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
+	        	// DEBUG bis hier
+        	}
+        	
+        	// Fall 2: Es wurden mehrere mögliche Drehrichtungen gefunden.
+        	// Dann: Wähle per Zufall eine dieser Richtungen aus.
+        	if (drehrichtungen.size() > 1) {
+        		Random randomGenerator = new Random();
+        		int index = randomGenerator.nextInt(drehrichtungen.size());
+        		
+        		// DEBUG von hier
+        		ArrayList<String> zuege = new ArrayList();
+        		
+        		for (int i=0;i<drehrichtungen.size();i++) {
+        			zuege.add(drehrichtungen.get(i).toString());
+        		}
+        		
+				String listString = "";
+
+				for (String s : zuege) {
+				    listString += s + ", ";
+				}
+        		
+	        	super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
+	        	// DEBUG bis hier
+	        	
+        		dreheHamsterInRichtung(drehrichtungen.get(index));
+        	}
+              	
         	// Was macht das hier?
         	memory.initKoernerArray();
         }
         
+    }
+    
+    /**
+     * Dreht den Hamster in eine durch drehrichtung gegebene Richtung
+     * @param drehrichtung
+     *        Richtung, in die der Hamster jetzt schauen soll.
+     */
+    void dreheHamsterInRichtung(Richtung drehrichtung) {
+    	if (drehrichtung == Richtung.Links) {
+    		meinLinksUm();
+    		return;
+    	}
+    	
+		// Bei Geradeaus müssen wir nichts tun
+    	
+    	if (drehrichtung == Richtung.Rechts) {
+    		meinRechtsUm();
+    		return;
+    	}
+    	
+    	if (drehrichtung == Richtung.Zurueck) {
+    		meinDreheUm();
+    		return;
+    	}
+    }
+    
+    /**
+     * Prüft, ob der Hamster ausgehend von der aktuellen Blickrichtung bei einer
+     * Drehung in Richtung richtung vor einer Mauer stehen würde. Falls das nicht
+     * entscheidbar ist (z.B. für zurück) wird false, also keine Mauer zurück-
+     * gegeben.
+     * @param richtung
+     *        Richtung für die geschaut werden soll. Muss Element des ENUM
+     *          Richtung sein.
+     */
+    boolean istMauerDa(Richtung richtung) {
+		// Überprüfe zunächst die Umgebung, damit die Werte aktuell sind.
+    	scanTerritorium();
+    	
+    	// Prüfe für die gegebene Richtung, ob eine Mauer da ist.
+    	if (richtung == Richtung.Links) {
+    		return scannedTerritorium[1][1] == 1;
+    	}
+    	
+    	if (richtung == Richtung.Geradeaus) {
+    		return scannedTerritorium[2][1] == 1;
+    	}
+    	
+    	if (richtung == Richtung.Rechts) {
+    		return scannedTerritorium[3][1] == 1;
+    	}
+    	
+    	return false;
     }
 
     void reinige() {
