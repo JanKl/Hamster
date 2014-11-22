@@ -3,6 +3,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     int top, numElements;
     int[] baseArray;
     int[] koernerArray;
+    MeinHamster hamster;
 
     public FixedSizeStack(int maxSize) {
         top = 0;
@@ -17,13 +18,14 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             numElements++;
         }
             baseArray[top] = num;
-            top = (top + 1) % baseArray.length;
             if (Territorium.getAnzahlKoerner(reihe,spalte) >0){
             	koernerArray[top] = 1;
             }
             else {
             	koernerArray[top] = 0;
             }
+        top = (top + 1) % baseArray.length;
+
         
     }
 
@@ -37,27 +39,27 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return baseArray[top];
     }
     
-    boolean pruefeKoerner(){
-    	boolean koernerDa= false;
+    boolean pruefeKoernerAufStrecke(){
+    	boolean koernerAufStrecke= false;
     	for(int i=0; i< koernerArray.length; i++){
-    		if (koernerArray[i] ==1){
-    			koernerDa=true;
+    		if (koernerArray[i] ==1 ||koernerArray[i] == -1||koernerArray[i]==2){
+    			koernerAufStrecke=true;
     		}
     	}
-    	return koernerDa;
+    	return koernerAufStrecke;
     }
     void initKoernerArray(){
     	for(int i=0; i< koernerArray.length; i++){
-    		koernerArray[i]=1;
+    		koernerArray[i]=-1;
     	}	
     }
     boolean genuegendKoerner() {
     	boolean koernerDa = false;
     	int anzahl=0;
-    	if (numElements >=5) {
+    	if (numElements >=6) {
     	for (int i=1;i<=5;i++){
-    		if (top==0) {
-    			if (koernerArray[koernerArray.length -1-i] == 1){
+    		if (top-i < 0) {
+    			if (koernerArray[koernerArray.length-1-i] == 1){
     				anzahl++;
     			}
     		} else{
@@ -71,5 +73,14 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     	}
     }
     return koernerDa;
+    }
+    
+    void letztesKornGenommen(){
+    	if (top == 0) {
+			koernerArray[koernerArray.length -2] =2;	
+    	}
+    	else {
+    		koernerArray[top-1]=2; 
+    	}  	
     }
 }

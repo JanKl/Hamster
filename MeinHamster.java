@@ -54,16 +54,19 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             // Prüfe vor dem Zug, ob eine Mauer da ist, um eine Exception zu vermeiden
             if (istMauerDa(Richtung.Geradeaus)) {
                 super.schreib("Mauer vorne, Hamster will keine platte Nase.");
-            } else {
-                super.vor();
-            	speichereWeg();                
-                akku.reduziereLadung();
-
-                // Sammle ein Korn auf, falls auf diesem Feld vorhanden
+            } else {                                         
+                // Sammle ein Korn auf, falls auf diesem Feld vorhanden und überprüfe ob
+                // dies das letzte Korn war.
                 if (super.kornDa()) {
                     super.nimm();
+                    if(!super.kornDa()){
+                    	memory.letztesKornGenommen();
+                    }
                 }
-               
+
+                super.vor(); 
+                akku.reduziereLadung();
+
 			}
         } else {
             super.schreib("Akku leer :-(");
@@ -120,7 +123,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
  * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
  */
     void schrittZurueck(int anzahl) {
-        int[] gespeicherteBlickrichtungen = new int[6];
+        int[][] gespeicherteBlickrichtungen = new int[6][3];
         int blickrichtung;
         int gewuenschteRichtung;
         for (int i = anzahl; i > 0; i--) {
@@ -131,13 +134,14 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
                 meinLinksUm();
                 blickrichtung = super.getBlickrichtung();
             }
-            gespeicherteBlickrichtungen[i]= blickrichtung; 
-            super.vor();
-            akku.reduziereLadung();
+            gespeicherteBlickrichtungen[i][0]= blickrichtung;
+            gespeicherteBlickrichtungen[i][1]= super.getReihe();
+            gespeicherteBlickrichtungen[i][2]= super.getSpalte();
+            meinVor();
             super.schreib("Gehe einen Schritt zurück");
         }
         for (int i= anzahl; i>0;i--){
-           memory.push(gespeicherteBlickrichtungen[i],super.getReihe(),super.getSpalte());
+           memory.push(gespeicherteBlickrichtungen[i][0],gespeicherteBlickrichtungen[i][1],gespeicherteBlickrichtungen[i][2]);
       	}
     }
 
@@ -162,9 +166,11 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     void ueberpruefeWeg(){
     	if (memory.genuegendKoerner()) {
     		schrittZurueck(5);
+    		//ueberpruefeWeg();
     	}
     }
-
+	
+	
 
     /**
      * Scannt die Umgebung vom aktuellen Standpunkt aus, überprüft ob eine Mauer
@@ -435,10 +441,10 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
          * mal besucht werden. Zumindest aber soll so verhindert werden, dass
          * immer der selbe leere Bereich abgesucht wird, wenn es noch Bereiche
          * mit Körnern gibt.
-         * !memory.pruefeKoerner ergibt true, wenn die letzten 10 Felder leer
+         * !memory.pruefeKoernerAufStrecke ergibt true, wenn die letzten 10 Felder leer
          * waren.
          */
-        if (!memory.pruefeKoerner()) {
+        if (!memory.pruefeKoernerAufStrecke()) {
             /*
              * Jetzt soll aus den Richtungen links, geradeaus und rechts zufällig
              * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in die
@@ -448,7 +454,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
              * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei links,
              * geradeaus und rechts höher.
              */
-
+             
             // Initialisiere Array infrage kommender Drehrichtungen.
             ArrayList<Richtung> drehrichtungen = new ArrayList();
 
@@ -570,12 +576,10 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
     void reinige() {
         while (akku.hatLadung()) {
+        	ueberpruefeWeg();
             umgebungAnalysieren();
-            //ueberpruefeWeg();
-            meinVor();
             speichereWeg();
-
+            meinVor();
         }
     }
-
 }
