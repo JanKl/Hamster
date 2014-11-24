@@ -165,7 +165,10 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return gewuenschteRichtung;
 
     }
-    
+    /**
+     *	Schaut ob auf 4 der letzten 5 Feldern Körner liegen und geht
+     *  zurück um diese zu nehemen.
+     */
     void ueberpruefeWeg(){
     	if (memory.genuegendKoerner()) {
     		schrittZurueck(5);
@@ -180,6 +183,12 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * Array ab. -1 --> Keine Mauer auf dieser Koordinate 0 --> Keine Aussage
      * über die Koordinate möglich 1 --> Auf dieser Koordinate befindet sich
      * eine Mauer
+     *
+     * kleine Hilfestellung zu Koordinaten
+     * 0,0 1,0 2,0 3,0 4,0
+     * 0,1 1,1 2,1 3,1 4,1
+     * 0,2 1,3 Ham 3,2 4,2
+     * ändere ich aber bei Gelegenheit noch zu dem "System" von getPosition()
      *     
 */
     void scanTerritorium() {
@@ -360,7 +369,20 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         }
 
     }
-
+	/**
+	 * In dieser Methode werden die Koordinaten für die umliegenden
+	 * Felder anhand der aktuellen Hamster-Position und Blickrichtung bestimmt.
+	 * Diese werden dann fortlaufend in einen Array gespeichert.
+	 * Dieser Array enthält dann in [...][1] die entsprechende Spalte
+	 * und in [...][0] die entsprechende Reihe. 
+	 * Die aufsteigenden Elemente sind im Blickfeld folgendermaßen angeordnet:
+	 * 1  2  3  4  5
+     * 6  7  8  9  10
+     * 11 12 13 14 15
+     * (wobei 13 die aktuelle Position des Hamsters ist)
+     * @return umgebung gibt den 2-dimensionalen Array zurück, der die relativen
+     * Koordinaten des Blickfeldes beinhaltet.
+	 */
     int[][] getPositions() {
         int blickrichtung = super.getBlickrichtung();
         int[][] umgebung = new int[16][2];
@@ -368,10 +390,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         int hamsterPosReihe = super.getReihe();
 
         int speicherPos = 0;
-        //speicherPos Anordnung
-        // 1  2  3  4  5
-        // 6  7  8  9  10
-        // 11 12 13 14 15
+
         switch (blickrichtung) {
             //Nord
             case 0:
@@ -574,7 +593,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
         // Prüfe für die gegebene Richtung, ob eine Mauer da ist.
         if (richtung == Richtung.Links) {
-            return scannedTerritorium[1][1] == 1;
+            return scannedTerritorium[1][2] == 1;
         }
 
         if (richtung == Richtung.Geradeaus) {
@@ -582,7 +601,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         }
 
         if (richtung == Richtung.Rechts) {
-            return scannedTerritorium[3][1] == 1;
+            return scannedTerritorium[3][2] == 1;
         }
 
         return false;
@@ -616,13 +635,14 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         
             ueberpruefeWeg();        	
             umgebungAnalysieren();
-            speichereWeg();
-            
             // Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
             if (istMauerDa(Richtung.Geradeaus)) {
             	dreheHamsterInRichtung(findeZufaelligeRichtung());
             }
-            
+            //INFO
+            // speichereWeg() muss direkt vor meinVor() sein, da es anhand der Blickrichtung den Weg speichert.
+            // Wenn dieser sich dazwischen ändert kann der Weg nicht korrekt gespeichert werden
+            speichereWeg();
             // Es ist jetzt sicher nach vorne zu ziehen
             meinVor();
         }
