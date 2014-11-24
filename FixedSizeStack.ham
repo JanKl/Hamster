@@ -3,84 +3,98 @@
     int top, numElements;
     int[] baseArray;
     int[] koernerArray;
-    MeinHamster hamster;
+    int[] zwischenspeicher;
+    int[] zwischenspeicher2;
 
     public FixedSizeStack(int maxSize) {
-        top = 0;
         numElements = 0;
         baseArray = new int[maxSize];
         koernerArray = new int[maxSize];
+        zwischenspeicher = new int[maxSize + 2];
+        zwischenspeicher2 = new int[maxSize + 2];
         initKoernerArray();
+        initZwischenspeicher();
     }
 
-    public void push(int num,int reihe, int spalte) {
+    public void push(int num, int reihe, int spalte) {
+        initZwischenspeicher();
+        for (int i = 0; i < baseArray.length; i++) {
+            zwischenspeicher[i + 2] = baseArray[i];
+            zwischenspeicher2[i + 2] = koernerArray[i];
+        }
+        for (int i = 0; i < baseArray.length; i++) {
+            baseArray[i] = zwischenspeicher[i + 1];
+            koernerArray[i] = zwischenspeicher2[i + 1];
+        }
+        baseArray[0] = num;
         if (numElements < baseArray.length) {
             numElements++;
         }
-            baseArray[top] = num;
-            if (Territorium.getAnzahlKoerner(reihe,spalte) >0){
-            	koernerArray[top] = 1;
-            }
-            else {
-            	koernerArray[top] = 0;
-            }
-        top = (top + 1) % baseArray.length;
-
-        
+        if (Territorium.getAnzahlKoerner(reihe, spalte) > 0) {
+            koernerArray[0] = 1;
+        } else {
+            koernerArray[0] = 0;
+        } 
     }
 
     public int pop() {
+        initZwischenspeicher();
         if (numElements == 0) {
-            return -1;  
+            return -1;
+        }
+
+        for (int i = 0; i < baseArray.length; i++) {
+            zwischenspeicher[i] = baseArray[i];
+            zwischenspeicher2[i] = koernerArray[i];
+        }
+        for (int i = 0; i < baseArray.length; i++) {
+            baseArray[i] = zwischenspeicher[i + 1];
+            koernerArray[i] = zwischenspeicher2[i + 1];
         }
         numElements--;
-		koernerArray[top]=0;
-        top = (top == 0) ? (baseArray.length - 1) : (top - 1);
-        return baseArray[top];
+        return zwischenspeicher[0];
     }
-    
-    boolean pruefeKoernerAufStrecke(){
-    	boolean koernerAufStrecke= false;
-    	for(int i=0; i< koernerArray.length; i++){
-    		if (koernerArray[i] ==1 ||koernerArray[i] == -1||koernerArray[i]==2){
-    			koernerAufStrecke=true;
-    		}
-    	}
-    	return koernerAufStrecke;
+
+    boolean pruefeKoernerAufStrecke() {
+        boolean koernerAufStrecke = false;
+        for (int i = 0; i < koernerArray.length; i++) {
+            if (koernerArray[i] == 1 || koernerArray[i] == -1 || koernerArray[i] == 2) {
+                koernerAufStrecke = true;
+            }
+        }
+        return koernerAufStrecke;
     }
-    void initKoernerArray(){
-    	for(int i=0; i< koernerArray.length; i++){
-    		koernerArray[i]=-1;
-    	}	
+
+    void initKoernerArray() {
+        for (int i = 0; i < koernerArray.length; i++) {
+            koernerArray[i] = -1;
+        }
     }
+
+    void initZwischenspeicher() {
+        for (int i = 0; i < zwischenspeicher.length; i++) {
+            zwischenspeicher[i] = -1;
+            zwischenspeicher2[i] = -1;
+        }
+    }
+
     boolean genuegendKoerner() {
-    	boolean koernerDa = false;
-    	int anzahl=0;
-    	if (numElements >=6) {
-    	for (int i=1;i<=5;i++){
-    		if (top-i < 0) {
-    			if (koernerArray[koernerArray.length-1-i] == 1){
-    				anzahl++;
-    			}
-    		} else{
-    		if (koernerArray[top-i]==1) {
-    			anzahl++;
-    			}
-    		}  		
-    	}
-    	if (anzahl>=4) {
-    		koernerDa = true;
-    	}
+        boolean koernerDa = false;
+        int anzahl = 0;
+        if (numElements >= 6) {
+            for (int i = 1; i <= 5; i++) {
+                    if (koernerArray[i] == 1) {
+                        anzahl++;
+                    }
+                }
+            if (anzahl >= 4) {
+                koernerDa = true;
+            }
+        }
+        return koernerDa;
     }
-    return koernerDa;
-    }
-    
-    void letztesKornGenommen(){
-    	if (top == 0) {
-			koernerArray[koernerArray.length -2] =2;	
-    	}
-    	else {
-    		koernerArray[top-1]=2; 
-    	}  	
+
+    void letztesKornGenommen() {
+        koernerArray[0]=2;
     }
 }

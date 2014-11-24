@@ -128,7 +128,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         int gewuenschteRichtung;
         for (int i = anzahl; i > 0; i--) {
             blickrichtung = super.getBlickrichtung();
-		gewuenschteRichtung = entgegengesetzteRichtung(memory.pop());
+			gewuenschteRichtung = entgegengesetzteRichtung(memory.pop());
 	
             while (gewuenschteRichtung != blickrichtung) {
                 meinLinksUm();
@@ -138,7 +138,6 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             gespeicherteBlickrichtungen[i][1]= super.getReihe();
             gespeicherteBlickrichtungen[i][2]= super.getSpalte();
             meinVor();
-            super.schreib("Gehe einen Schritt zurück");
         }
         for (int i= anzahl; i>0;i--){
            memory.push(gespeicherteBlickrichtungen[i][0],gespeicherteBlickrichtungen[i][1],gespeicherteBlickrichtungen[i][2]);
@@ -153,7 +152,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * @return
      */
     int entgegengesetzteRichtung(int richtungLetzterSchritt) {
-        int gewuenschteRichtung;
+        int gewuenschteRichtung =-1;
         if (richtungLetzterSchritt >= 2) {
             gewuenschteRichtung = richtungLetzterSchritt - 2;
         } else {
@@ -166,7 +165,6 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     void ueberpruefeWeg(){
     	if (memory.genuegendKoerner()) {
     		schrittZurueck(5);
-    		//ueberpruefeWeg();
     	}
     }
 	
@@ -576,7 +574,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
     void reinige() {
         while (akku.hatLadung()) {
-        	ueberpruefeWeg();
+            ueberpruefeWeg();        	
             umgebungAnalysieren();
             speichereWeg();
             meinVor();
