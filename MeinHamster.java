@@ -589,6 +589,13 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             ueberpruefeWeg();        	
             umgebungAnalysieren();
             speichereWeg();
+            
+            // Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
+            if (istMauerDa(Richtung.Geradeaus)) {
+            	dreheHamsterInRichtung(findeZufaelligeRichtung());
+            }
+            
+            // Es ist jetzt sicher nach vorne zu ziehen
             meinVor();
         }
     }
