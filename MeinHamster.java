@@ -55,22 +55,26 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             if (istMauerDa(Richtung.Geradeaus)) {
                 super.schreib("Mauer vorne, Hamster will keine platte Nase.");
             } else {                                         
-                // Sammle ein Korn auf, falls auf diesem Feld vorhanden und überprüfe ob
-                // dies das letzte Korn war.
-                if (super.kornDa()) {
-                    super.nimm();
-                    if(!super.kornDa()){
-                    	memory.letztesKornGenommen();
-                    }
-                }
-
                 super.vor(); 
                 akku.reduziereLadung();
-
 			}
         } else {
             super.schreib("Akku leer :-(");
         }
+    }
+    
+    /**
+     * Nimmt ein Korn auf, falls auf diesem Feld eines liegt
+     */
+    void nimmKornFallsDa() {
+		// Sammle ein Korn auf, falls auf diesem Feld vorhanden und überprüfe ob
+		// dies das letzte Korn war.
+		if (super.kornDa()) {
+			super.nimm();
+			if(!super.kornDa()){
+				memory.letztesKornGenommen();
+			}
+		}
     }
 
     /**
@@ -584,8 +588,32 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return false;
     }
 
+	/**
+	 * Zeigt ein Dialogfenster mit der Effizienz des Hamsters
+	 */
+	void zeigeEffizienz() {
+		int gefundeneKoerner = super.getAnzahlKoerner();
+		int zurueckgelasseneKoerner = Territorium.getAnzahlKoerner();
+		int gesamteKoerner = gefundeneKoerner+zurueckgelasseneKoerner;
+		// TODO Hier ist noch ein Problem, es gibt nur 0% oder 100%
+		int effizienz = (gefundeneKoerner/gesamteKoerner)*100;
+		int restladung = akku.gibLadung();
+		super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
+	}
+
+	/**
+	 * Reinigt das Feld mit dem Hamster
+	 */
     void reinige() {
         while (akku.hatLadung()) {
+        	// Prüfe, ob auf der aktuellen Kachel ein Korn liegt und nimm dieses ggf. auf
+        	nimmKornFallsDa();
+        	
+        	// Prüfe nun, ob damit alle Körner in dem Territorium aufgesammelt sind.
+        	if (Territorium.getAnzahlKoerner() == 0) {
+        		break;
+        	}
+        
             ueberpruefeWeg();        	
             umgebungAnalysieren();
             speichereWeg();
@@ -598,5 +626,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             // Es ist jetzt sicher nach vorne zu ziehen
             meinVor();
         }
+        
+        // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
+        // Das passiert, wenn der Akku leer ist, oder alle Körner gefunden wurden.
+		zeigeEffizienz();
     }
 }
