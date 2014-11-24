@@ -443,82 +443,94 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
          * waren.
          */
         if (!memory.pruefeKoernerAufStrecke()) {
-            /*
-             * Jetzt soll aus den Richtungen links, geradeaus und rechts zufällig
-             * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in die
-             * Auswahl, bei denen der Hamster anschließend nicht direkt vor einer
-             * Mauer stehen würde.
-             * Zurück ist zunächst keine Option, da ja genau dort zuletzt auch
-             * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei links,
-             * geradeaus und rechts höher.
-             */
-             
-            // Initialisiere Array infrage kommender Drehrichtungen.
-            ArrayList<Richtung> drehrichtungen = new ArrayList();
+			// Finde zufällige Richtung und drehe in diese.
+			dreheHamsterInRichtung(findeZufaelligeRichtung());
 
-            // Prüfe infrage kommende Werte.
-            if (!istMauerDa(Richtung.Links)) {
-                drehrichtungen.add(Richtung.Links);
-            }
-
-            if (!istMauerDa(Richtung.Geradeaus)) {
-                drehrichtungen.add(Richtung.Geradeaus);
-            }
-
-            if (!istMauerDa(Richtung.Rechts)) {
-                drehrichtungen.add(Richtung.Rechts);
-            }
-
-        	// Fall 0: Es wurden gar keine möglichen Drehrichtungen gefunden.
-            // Dann: Drehe um und gehe zurück.
-            if (drehrichtungen.size() == 0) {
-                dreheHamsterInRichtung(Richtung.Zurueck);
-
-                // DEBUG von hier
-                super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
-                // DEBUG bis hier
-            }
-
-        	// Fall 1: Es wurden nur eine mögliche Drehrichtung gefunden.
-            // Dann: Wähle diese Richtung.
-            if (drehrichtungen.size() == 1) {
-                dreheHamsterInRichtung(drehrichtungen.get(0));
-
-                // DEBUG von hier
-                super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
-                // DEBUG bis hier
-            }
-
-        	// Fall 2: Es wurden mehrere mögliche Drehrichtungen gefunden.
-            // Dann: Wähle per Zufall eine dieser Richtungen aus.
-            if (drehrichtungen.size() > 1) {
-                Random randomGenerator = new Random();
-                int index = randomGenerator.nextInt(drehrichtungen.size());
-
-                // DEBUG von hier
-                ArrayList<String> zuege = new ArrayList();
-
-                for (int i = 0; i < drehrichtungen.size(); i++) {
-                    zuege.add(drehrichtungen.get(i).toString());
-                }
-
-                String listString = "";
-
-                for (String s : zuege) {
-                    listString += s + ", ";
-                }
-
-                super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
-	        	// DEBUG bis hier
-
-                dreheHamsterInRichtung(drehrichtungen.get(index));
-            }
-
-            // Was macht das hier?
+            // Setze die Information über leere Kacheln auf den letzten 10 Feldern zurück.
+			// Wenn man das nicht macht, hat er möglicherweise beim nächsten Feld schon wieder 10 leere...
             memory.initKoernerArray();
         }
 
     }
+	
+	/**
+	 * Finde eine zufällige, aber mögliche Drehrichtung
+	 */
+	Richtung findeZufaelligeRichtung() {
+		/*
+		 * Jetzt soll aus den Richtungen links, geradeaus und rechts zufällig
+		 * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in die
+		 * Auswahl, bei denen der Hamster anschließend nicht direkt vor einer
+		 * Mauer stehen würde.
+		 * Zurück ist zunächst keine Option, da ja genau dort zuletzt auch
+		 * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei links,
+		 * geradeaus und rechts höher.
+		 */
+		 
+		// Initialisiere Array infrage kommender Drehrichtungen.
+		ArrayList<Richtung> drehrichtungen = new ArrayList();
+
+		// Prüfe infrage kommende Werte.
+		if (!istMauerDa(Richtung.Links)) {
+			drehrichtungen.add(Richtung.Links);
+		}
+
+		if (!istMauerDa(Richtung.Geradeaus)) {
+			drehrichtungen.add(Richtung.Geradeaus);
+		}
+
+		if (!istMauerDa(Richtung.Rechts)) {
+			drehrichtungen.add(Richtung.Rechts);
+		}
+
+		// Fall 0: Es wurden gar keine möglichen Drehrichtungen gefunden.
+		// Dann: Drehe um und gehe zurück.
+		if (drehrichtungen.size() == 0) {
+			// DEBUG von hier
+			super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
+			// DEBUG bis hier
+			
+			return Richtung.Zurueck;
+		}
+
+		// Fall 1: Es wurden nur eine mögliche Drehrichtung gefunden.
+		// Dann: Wähle diese Richtung.
+		if (drehrichtungen.size() == 1) {
+			// DEBUG von hier
+			super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
+			// DEBUG bis hier
+			
+			return drehrichtungen.get(0);
+		}
+
+		// Fall 2: Es wurden mehrere mögliche Drehrichtungen gefunden.
+		// Dann: Wähle per Zufall eine dieser Richtungen aus.
+		if (drehrichtungen.size() > 1) {
+			Random randomGenerator = new Random();
+			int index = randomGenerator.nextInt(drehrichtungen.size());
+
+			// DEBUG von hier
+			ArrayList<String> zuege = new ArrayList();
+
+			for (int i = 0; i < drehrichtungen.size(); i++) {
+				zuege.add(drehrichtungen.get(i).toString());
+			}
+
+			String listString = "";
+
+			for (String s : zuege) {
+				listString += s + ", ";
+			}
+
+			super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
+			// DEBUG bis hier
+
+			return drehrichtungen.get(index);
+		}
+		
+		// Diese Ausgabe kann nie aufgerufen werden, Java fordert sie aber
+		return Richtung.Geradeaus;
+	}
 
     /**
      * Dreht den Hamster in eine durch drehrichtung gegebene Richtung
