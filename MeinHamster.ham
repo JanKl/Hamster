@@ -621,8 +621,7 @@ class MeinHamster extends Hamster {
 		int gefundeneKoerner = super.getAnzahlKoerner();
 		int zurueckgelasseneKoerner = Territorium.getAnzahlKoerner();
 		int gesamteKoerner = gefundeneKoerner+zurueckgelasseneKoerner;
-		// TODO Hier ist noch ein Problem, es gibt nur 0% oder 100%
-		int effizienz = (gefundeneKoerner/gesamteKoerner)*100;
+		int effizienz = Math.round(((float) gefundeneKoerner / (float) gesamteKoerner) * (float) 100);
 		int restladung = akku.gibLadung();
 		super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
 	}
