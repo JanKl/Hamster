@@ -62,6 +62,13 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             super.schreib("Akku leer :-(");
         }
     }
+    /** 
+     * Speichert den Weg und läuft dann nach vorne.
+     */
+    void  meinVorUndSpeichern() {
+    	speichereWeg();
+    	meinVor();
+    }
     
     /**
      * Nimmt ein Korn auf, falls auf diesem Feld eines liegt
@@ -639,12 +646,8 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             if (istMauerDa(Richtung.Geradeaus)) {
             	dreheHamsterInRichtung(findeZufaelligeRichtung());
             }
-            //INFO
-            // speichereWeg() muss direkt vor meinVor() sein, da es anhand der Blickrichtung den Weg speichert.
-            // Wenn dieser sich dazwischen ändert kann der Weg nicht korrekt gespeichert werden
-            speichereWeg();
             // Es ist jetzt sicher nach vorne zu ziehen
-            meinVor();
+            meinVorUndSpeichern();
         }
         
         // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
