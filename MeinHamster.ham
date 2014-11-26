@@ -60,6 +60,7 @@ class MeinHamster extends Hamster {
                 akku.reduziereLadung();
                 // Prüfe, ob auf der aktuellen Kachel ein Korn liegt und nimm dieses ggf. auf
                 nimmKornFallsDa();
+                scanSichtfeld();
             }
         } else {
             super.schreib("Akku leer :-(");
@@ -97,6 +98,7 @@ class MeinHamster extends Hamster {
             super.linksUm();
             akku.reduziereLadung();
             letzteRichtung= Richtung.Links;
+            scanSichtfeld();
         } else {
             super.schreib("Akku leer :-(");
         }
@@ -113,6 +115,7 @@ class MeinHamster extends Hamster {
             super.linksUm();
             akku.reduziereLadung();
             letzteRichtung = Richtung.Rechts;
+            scanSichtfeld();
         } else {
             super.schreib("Akku leer :-(");
         }
@@ -458,6 +461,7 @@ class MeinHamster extends Hamster {
      *
      */
     void pruefeSichtfeld() {
+    
         //linksseitige Ecke & Tunnel
         if (scannedTerritorium[1][2] ==1&& scannedTerritorium[3][1]==1) {
             if (scannedTerritorium[3][2]==-1){
@@ -473,18 +477,23 @@ class MeinHamster extends Hamster {
         else if (scannedTerritorium[3][2]==1&& scannedTerritorium[1][1]==1){
             meinLinksUm();
             meinVorUndSpeichern();
-            meinRechtsUm();
+            meinLinksUm();
         }
+        //Schlangenlinien
         else{
             if(letzteRichtung == Richtung.Links) {
-                meinRechtsUm();
-                meinVorUndSpeichern();
-                meinRechtsUm();
+                if (scannedTerritorium[3][2]==-1){
+                	meinRechtsUm();
+                	meinVorUndSpeichern();
+                	meinRechtsUm();
+                }
             }
             else if(letzteRichtung == Richtung.Rechts){
-                meinLinksUm();
-                meinVorUndSpeichern();
-                meinLinksUm();
+                if (scannedTerritorium[1][2]==-1){
+                	meinLinksUm();
+                	meinVorUndSpeichern();
+                	meinLinksUm();
+                }
             }
             
         }
@@ -506,6 +515,7 @@ class MeinHamster extends Hamster {
         if (!memory.pruefeKoernerAufStrecke()) {
             // Finde zufällige Richtung und drehe in diese.
             dreheHamsterInRichtung(findeZufaelligeRichtung());
+            meinVorUndSpeichern();
             	
 
             // Setze die Information über leere Kacheln auf den letzten 10 Feldern zurück.
@@ -626,8 +636,6 @@ class MeinHamster extends Hamster {
      * ENUM Richtung sein.
      */
     boolean istMauerDa(Richtung richtung) {
-        // Überprüfe zunächst die Umgebung, damit die Werte aktuell sind.
-        scanSichtfeld();
 
         // Prüfe für die gegebene Richtung, ob eine Mauer da ist.
         if (richtung == Richtung.Links) {
@@ -672,14 +680,26 @@ class MeinHamster extends Hamster {
 //            if (istMauerDa(Richtung.Geradeaus)) {
 //                dreheHamsterInRichtung(findeZufaelligeRichtung());
 //            }
-            scanSichtfeld();
             // Durch eine Drehung ist jetzt möglicherweise der Akku leer geworden, deswegen neu prüfen
             if (akku.hatLadung()) {
                		ueberpruefeWegAufKoerner();
                 	ueberpruefeLetzte10Felder();
                 // Es ist jetzt sicher nach vorne zu ziehen
                 if (scannedTerritorium[2][1] == -1) {
+                	//überprüft ob sich der Hamster in einem schmalen Gang befindet und keine Schlangenlinien laufen soll
+                	if  (scannedTerritorium[3][2] ==1&& scannedTerritorium[1][1]==1 && scannedTerritorium[2][0] ==1 && scannedTerritorium[3][1] ==-1){
+						meinVorUndSpeichern();
+						meinRechtsUm();
+						meinVorUndSpeichern();
+    				}
+    				else if(scannedTerritorium[1][2] ==1&& scannedTerritorium[3][1]==1 && scannedTerritorium[2][0] ==1 && scannedTerritorium[1][1] ==-1){
+    					meinVorUndSpeichern();
+    					meinLinksUm();
+    					meinVorUndSpeichern();
+    				}
+    				else{
                     meinVorUndSpeichern();
+                    }
                 } else {
                     pruefeSichtfeld();
                 }
