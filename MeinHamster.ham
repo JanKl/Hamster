@@ -128,11 +128,12 @@ class MeinHamster extends Hamster {
 
     }
 
-/**
- * Läuft eine angegebene Anzahl an Schritten zurück und speichert die dafür benötigten
- * Schritte wieder.
- * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
- */
+	/**
+	 * Läuft eine angegebene Anzahl an Schritten zurück und speichert die dafür benötigten
+	 * Schritte wieder.
+	 * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
+     */
+    // TODO: Vor Bewegungen prüfen, ob Akku noch Ladung hat
     void schrittZurueck(int anzahl) {
         int[][] gespeicherteBlickrichtungen = new int[6][3];
         int blickrichtung;
@@ -149,6 +150,7 @@ class MeinHamster extends Hamster {
             gespeicherteBlickrichtungen[i][1]= super.getReihe();
             gespeicherteBlickrichtungen[i][2]= super.getSpalte();
             meinVor();
+           	nimmKornFallsDa();
         }
         for (int i= anzahl; i>0;i--){
            memory.push(gespeicherteBlickrichtungen[i][0],gespeicherteBlickrichtungen[i][1],gespeicherteBlickrichtungen[i][2]);
@@ -523,7 +525,7 @@ class MeinHamster extends Hamster {
 		// Dann: Drehe um und gehe zurück.
 		if (drehrichtungen.size() == 0) {
 			// DEBUG von hier
-			super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
+			//super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
 			// DEBUG bis hier
 			
 			return Richtung.Zurueck;
@@ -533,7 +535,7 @@ class MeinHamster extends Hamster {
 		// Dann: Wähle diese Richtung.
 		if (drehrichtungen.size() == 1) {
 			// DEBUG von hier
-			super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
+			//super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
 			// DEBUG bis hier
 			
 			return drehrichtungen.get(0);
@@ -558,7 +560,7 @@ class MeinHamster extends Hamster {
 				listString += s + ", ";
 			}
 
-			super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
+			//super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
 			// DEBUG bis hier
 
 			return drehrichtungen.get(index);
@@ -627,8 +629,7 @@ class MeinHamster extends Hamster {
 		int gefundeneKoerner = super.getAnzahlKoerner();
 		int zurueckgelasseneKoerner = Territorium.getAnzahlKoerner();
 		int gesamteKoerner = gefundeneKoerner+zurueckgelasseneKoerner;
-		// TODO Hier ist noch ein Problem, es gibt nur 0% oder 100%
-		int effizienz = (gefundeneKoerner/gesamteKoerner)*100;
+		int effizienz = Math.round(((float) gefundeneKoerner / (float) gesamteKoerner) * (float) 100);
 		int restladung = akku.gibLadung();
 		super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
 	}
@@ -648,12 +649,17 @@ class MeinHamster extends Hamster {
         
             ueberpruefeWeg();        	
             umgebungAnalysieren();
+
             //Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
             if (istMauerDa(Richtung.Geradeaus)) {
             	//dreheHamsterInRichtung(findeZufaelligeRichtung());
             }
-            // Es ist jetzt sicher nach vorne zu ziehen
-            meinVorUndSpeichern();
+            
+            // Durch eine Drehung ist jetzt möglicherweise der Akku leer geworden, deswegen neu prüfen
+            if (akku.hatLadung()) {
+	            // Es ist jetzt sicher nach vorne zu ziehen
+    	        meinVorUndSpeichern();
+    	    }
         }
         
         // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
