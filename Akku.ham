@@ -5,13 +5,16 @@
  */
 class Akku {
 	int akkuladung;
+	int akkuladungVoll;
 	
 	/**
 	 * Initialisiert die Akkuladung mit der Territoriumsgröße.
 	 */
     Akku() {
     	akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
+    	akkuladungVoll=akkuladung;
     }
+    
     
     /**
      * Gibt die Info, ob noch Akkuladung vorhanden ist (für mindestens einen Schritt).
@@ -29,11 +32,21 @@ class Akku {
     	return akkuladung -= 1;
     }
     
+    
     /**
      * Gibt die aktuelle Ladung aus
      * @return Aktuelle Akkuladung
      */
     int gibLadung() {
     	return akkuladung;
-    }    
+    }
+        /**
+     * Gibt die maximale Ladung aus (Ladung zu Beginn)
+     * @return größe des Akkus
+     */
+    int gibMaxLadung() {
+    	return akkuladungVoll;
+    }
+        
+        
 }

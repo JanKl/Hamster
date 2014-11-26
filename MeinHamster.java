@@ -10,6 +10,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     Akku akku;
     FixedSizeStack memory;
     int[][] scannedTerritorium = new int[5][3];
+    Richtung letzteRichtung = Richtung.Links;
 
     MeinHamster() {
         super();
@@ -54,34 +55,37 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             // Prüfe vor dem Zug, ob eine Mauer da ist, um eine Exception zu vermeiden
             if (istMauerDa(Richtung.Geradeaus)) {
                 super.schreib("Mauer vorne, Hamster will keine platte Nase.");
-            } else {                                         
-                super.vor(); 
+            } else {
+                super.vor();
                 akku.reduziereLadung();
-			}
+                // Prüfe, ob auf der aktuellen Kachel ein Korn liegt und nimm dieses ggf. auf
+                nimmKornFallsDa();
+            }
         } else {
             super.schreib("Akku leer :-(");
         }
     }
-    /** 
+
+    /**
      * Speichert den Weg und läuft dann nach vorne.
      */
-    void  meinVorUndSpeichern() {
-    	speichereWeg();
-    	meinVor();
+    void meinVorUndSpeichern() {
+        speichereWeg();
+        meinVor();
     }
-    
+
     /**
      * Nimmt ein Korn auf, falls auf diesem Feld eines liegt
      */
     void nimmKornFallsDa() {
-		// Sammle ein Korn auf, falls auf diesem Feld vorhanden und überprüfe ob
-		// dies das letzte Korn war.
-		if (super.kornDa()) {
-			super.nimm();
-			if(!super.kornDa()){
-				memory.letztesKornGenommen();
-			}
-		}
+        // Sammle ein Korn auf, falls auf diesem Feld vorhanden und überprüfe ob
+        // dies das letzte Korn war.
+        if (super.kornDa()) {
+            super.nimm();
+            if (!super.kornDa()) {
+                memory.letztesKornGenommen();
+            }
+        }
     }
 
     /**
@@ -92,6 +96,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         if (akku.hatLadung()) {
             super.linksUm();
             akku.reduziereLadung();
+            letzteRichtung= Richtung.Links;
         } else {
             super.schreib("Akku leer :-(");
         }
@@ -107,6 +112,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             super.linksUm();
             super.linksUm();
             akku.reduziereLadung();
+            letzteRichtung = Richtung.Rechts;
         } else {
             super.schreib("Akku leer :-(");
         }
@@ -128,10 +134,11 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
     }
 
-	/**
-	 * Läuft eine angegebene Anzahl an Schritten zurück und speichert die dafür benötigten
-	 * Schritte wieder.
-	 * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
+    /**
+     * Läuft eine angegebene Anzahl an Schritten zurück und speichert die dafür
+     * benötigten Schritte wieder.
+     *
+     * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
      */
     // TODO: Vor Bewegungen prüfen, ob Akku noch Ladung hat
     void schrittZurueck(int anzahl) {
@@ -140,21 +147,20 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         int gewuenschteRichtung;
         for (int i = anzahl; i > 0; i--) {
             blickrichtung = super.getBlickrichtung();
-			gewuenschteRichtung = entgegengesetzteRichtung(memory.pop());
-	
+            gewuenschteRichtung = entgegengesetzteRichtung(memory.pop());
+
             while (gewuenschteRichtung != blickrichtung) {
                 meinLinksUm();
                 blickrichtung = super.getBlickrichtung();
             }
-            gespeicherteBlickrichtungen[i][0]= blickrichtung;
-            gespeicherteBlickrichtungen[i][1]= super.getReihe();
-            gespeicherteBlickrichtungen[i][2]= super.getSpalte();
+            gespeicherteBlickrichtungen[i][0] = blickrichtung;
+            gespeicherteBlickrichtungen[i][1] = super.getReihe();
+            gespeicherteBlickrichtungen[i][2] = super.getSpalte();
             meinVor();
-           	nimmKornFallsDa();
         }
-        for (int i= anzahl; i>0;i--){
-           memory.push(gespeicherteBlickrichtungen[i][0],gespeicherteBlickrichtungen[i][1],gespeicherteBlickrichtungen[i][2]);
-      	}
+        for (int i = anzahl; i > 0; i--) {
+            memory.push(gespeicherteBlickrichtungen[i][0], gespeicherteBlickrichtungen[i][1], gespeicherteBlickrichtungen[i][2]);
+        }
     }
 
     /**
@@ -165,7 +171,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * @return
      */
     int entgegengesetzteRichtung(int richtungLetzterSchritt) {
-        int gewuenschteRichtung =-1;
+        int gewuenschteRichtung = -1;
         if (richtungLetzterSchritt >= 2) {
             gewuenschteRichtung = richtungLetzterSchritt - 2;
         } else {
@@ -174,17 +180,16 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return gewuenschteRichtung;
 
     }
+
     /**
-     *	Schaut ob auf 4 der letzten 5 Feldern Körner liegen und geht
-     *  zurück um diese zu nehemen.
+     * Schaut ob auf 4 der letzten 5 Feldern Körner liegen und geht zurück um
+     * diese zu nehemen.
      */
-    void ueberpruefeWeg(){
-    	if (memory.genuegendKoerner()) {
-    		schrittZurueck(5);
-    	}
+    void ueberpruefeWegAufKoerner() {
+        if (memory.genuegendKoerner()) {
+            schrittZurueck(5);
+        }
     }
-	
-	
 
     /**
      * Scannt die Umgebung vom aktuellen Standpunkt aus, überprüft ob eine Mauer
@@ -193,14 +198,12 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * über die Koordinate möglich 1 --> Auf dieser Koordinate befindet sich
      * eine Mauer
      *
-     * kleine Hilfestellung zu Koordinaten
-     * 0,0 1,0 2,0 3,0 4,0
-     * 0,1 1,1 2,1 3,1 4,1
-     * 0,2 1,3 Ham 3,2 4,2
-     * ändere ich aber bei Gelegenheit noch zu dem "System" von getPosition()
+     * kleine Hilfestellung zu Koordinaten 0,0 1,0 2,0 3,0 4,0 0,1 1,1 2,1 3,1
+     * 4,1 0,2 1,3 Ham 3,2 4,2 ändere ich aber bei Gelegenheit noch zu dem
+     * "System" von getPosition()
      *     
 */
-    void scanTerritorium() {
+    void scanSichtfeld() {
 
         // Den Array mit 0 initialisieren bzw. resetten
         initialisiereScannedTerritorium();
@@ -378,20 +381,19 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         }
 
     }
-	/**
-	 * In dieser Methode werden die Koordinaten für die umliegenden
-	 * Felder anhand der aktuellen Hamster-Position und Blickrichtung bestimmt.
-	 * Diese werden dann fortlaufend in einen Array gespeichert.
-	 * Dieser Array enthält dann in [...][1] die entsprechende Spalte
-	 * und in [...][0] die entsprechende Reihe. 
-	 * Die aufsteigenden Elemente sind im Blickfeld folgendermaßen angeordnet:
-	 * 1  2  3  4  5
-     * 6  7  8  9  10
-     * 11 12 13 14 15
-     * (wobei 13 die aktuelle Position des Hamsters ist)
+
+    /**
+     * In dieser Methode werden die Koordinaten für die umliegenden Felder
+     * anhand der aktuellen Hamster-Position und Blickrichtung bestimmt. Diese
+     * werden dann fortlaufend in einen Array gespeichert. Dieser Array enthält
+     * dann in [...][1] die entsprechende Spalte und in [...][0] die
+     * entsprechende Reihe. Die aufsteigenden Elemente sind im Blickfeld
+     * folgendermaßen angeordnet: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 (wobei 13
+     * die aktuelle Position des Hamsters ist)
+     *
      * @return umgebung gibt den 2-dimensionalen Array zurück, der die relativen
      * Koordinaten des Blickfeldes beinhaltet.
-	 */
+     */
     int[][] getPositions() {
         int blickrichtung = super.getBlickrichtung();
         int[][] umgebung = new int[16][2];
@@ -450,125 +452,146 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return umgebung;
     }
 
-    void umgebungAnalysieren() {
-        scanTerritorium();
-        pruefeUmgebung();
-    }
     /*
-     * Prüft die Umgebung auf spezielle Anordnungen der Mauern im Sichtfeld
+     * Prüft das Sichtfeld auf spezielle Anordnungen der Mauern
      * und reagiert auf diese entsprechend.
      *
      */
-
-    void pruefeUmgebung() {
-    	if (scannedTerritorium[1][2] == 1 && scannedTerritorium[2][1] == 1) {
-            if (scannedTerritorium[3][2] == -1) {
+    void pruefeSichtfeld() {
+        //linksseitige Ecke & Tunnel
+        if (scannedTerritorium[1][2] ==1&& scannedTerritorium[3][1]==1) {
+            if (scannedTerritorium[3][2]==-1){
                 meinRechtsUm();
-            } else {
+                meinVorUndSpeichern();
+                meinRechtsUm();
+            }
+            else {
                 schrittZurueck(1);
             }
+        } 
+        //rechtsseitige Ecke
+        else if (scannedTerritorium[3][2]==1&& scannedTerritorium[1][1]==1){
+            meinLinksUm();
+            meinVorUndSpeichern();
+            meinRechtsUm();
         }
-     
-    
-        /*
-         * Wenn auf den letzten 10 besuchten Feldern keine Körner mehr liegen,
-         * soll der Hamster zufällig eine andere Richtung einschlagen. Wir er-
-         * hoffen uns davon, dass über eine Zufallskomponente alle Felder ein-
-         * mal besucht werden. Zumindest aber soll so verhindert werden, dass
-         * immer der selbe leere Bereich abgesucht wird, wenn es noch Bereiche
-         * mit Körnern gibt.
-         * !memory.pruefeKoernerAufStrecke ergibt true, wenn die letzten 10 Felder leer
-         * waren.
-         */
+        else{
+            if(letzteRichtung == Richtung.Links) {
+                meinRechtsUm();
+                meinVorUndSpeichern();
+                meinRechtsUm();
+            }
+            else if(letzteRichtung == Richtung.Rechts){
+                meinLinksUm();
+                meinVorUndSpeichern();
+                meinLinksUm();
+            }
+            
+        }
+
+    }
+
+    /*
+     * Wenn auf den letzten 10 besuchten Feldern keine Körner mehr liegen,
+     * soll der Hamster zufällig eine andere Richtung einschlagen. Wir er-
+     * hoffen uns davon, dass über eine Zufallskomponente alle Felder ein-
+     * mal besucht werden. Zumindest aber soll so verhindert werden, dass
+     * immer der selbe leere Bereich abgesucht wird, wenn es noch Bereiche
+     * mit Körnern gibt.
+     * !memory.pruefeKoernerAufStrecke ergibt true, wenn die letzten 10 Felder leer
+     * waren.
+     */
+    void ueberpruefeLetzte10Felder() {
+
         if (!memory.pruefeKoernerAufStrecke()) {
-			// Finde zufällige Richtung und drehe in diese.
-			dreheHamsterInRichtung(findeZufaelligeRichtung());
+            // Finde zufällige Richtung und drehe in diese.
+            dreheHamsterInRichtung(findeZufaelligeRichtung());
+            	
 
             // Setze die Information über leere Kacheln auf den letzten 10 Feldern zurück.
-			// Wenn man das nicht macht, hat er möglicherweise beim nächsten Feld schon wieder 10 leere...
+            // Wenn man das nicht macht, hat er möglicherweise beim nächsten Feld schon wieder 10 leere...
             memory.initKoernerArray();
         }
 
     }
-	
-	/**
-	 * Finde eine zufällige, aber mögliche Drehrichtung
-	 */
-	Richtung findeZufaelligeRichtung() {
-		/*
-		 * Jetzt soll aus den Richtungen links, geradeaus und rechts zufällig
-		 * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in die
-		 * Auswahl, bei denen der Hamster anschließend nicht direkt vor einer
-		 * Mauer stehen würde.
-		 * Zurück ist zunächst keine Option, da ja genau dort zuletzt auch
-		 * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei links,
-		 * geradeaus und rechts höher.
-		 */
-		 
-		// Initialisiere Array infrage kommender Drehrichtungen.
-		ArrayList<Richtung> drehrichtungen = new ArrayList();
 
-		// Prüfe infrage kommende Werte.
-		if (!istMauerDa(Richtung.Links)) {
-			drehrichtungen.add(Richtung.Links);
-		}
+    /**
+     * Finde eine zufällige, aber mögliche Drehrichtung
+     */
+    Richtung findeZufaelligeRichtung() {
+        /*
+         * Jetzt soll aus den Richtungen links, geradeaus und rechts zufällig
+         * eine ausgewählt werden. Es kommen jedoch nur die Richtungen in die
+         * Auswahl, bei denen der Hamster anschließend nicht direkt vor einer
+         * Mauer stehen würde.
+         * Zurück ist zunächst keine Option, da ja genau dort zuletzt auch
+         * keine Körner mehr lagen. Die Wahrscheinlichkeit ist also bei links,
+         * geradeaus und rechts höher.
+         */
 
-		if (!istMauerDa(Richtung.Geradeaus)) {
-			drehrichtungen.add(Richtung.Geradeaus);
-		}
+        // Initialisiere Array infrage kommender Drehrichtungen.
+        ArrayList<Richtung> drehrichtungen = new ArrayList();
 
-		if (!istMauerDa(Richtung.Rechts)) {
-			drehrichtungen.add(Richtung.Rechts);
-		}
+        // Prüfe infrage kommende Werte.
+        if (!istMauerDa(Richtung.Links)) {
+            drehrichtungen.add(Richtung.Links);
+        }
 
-		// Fall 0: Es wurden gar keine möglichen Drehrichtungen gefunden.
-		// Dann: Drehe um und gehe zurück.
-		if (drehrichtungen.size() == 0) {
-			// DEBUG von hier
-			//super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
-			// DEBUG bis hier
-			
-			return Richtung.Zurueck;
-		}
+        if (!istMauerDa(Richtung.Geradeaus)) {
+            drehrichtungen.add(Richtung.Geradeaus);
+        }
 
-		// Fall 1: Es wurden nur eine mögliche Drehrichtung gefunden.
-		// Dann: Wähle diese Richtung.
-		if (drehrichtungen.size() == 1) {
-			// DEBUG von hier
-			//super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
-			// DEBUG bis hier
-			
-			return drehrichtungen.get(0);
-		}
+        if (!istMauerDa(Richtung.Rechts)) {
+            drehrichtungen.add(Richtung.Rechts);
+        }
 
-		// Fall 2: Es wurden mehrere mögliche Drehrichtungen gefunden.
-		// Dann: Wähle per Zufall eine dieser Richtungen aus.
-		if (drehrichtungen.size() > 1) {
-			Random randomGenerator = new Random();
-			int index = randomGenerator.nextInt(drehrichtungen.size());
+        // Fall 0: Es wurden gar keine möglichen Drehrichtungen gefunden.
+        // Dann: Drehe um und gehe zurück.
+        if (drehrichtungen.size() == 0) {
+            // DEBUG von hier
+            //super.schreib("Keine möglichen Bewegungen nach vorne gefunden.");
+            // DEBUG bis hier
 
-			// DEBUG von hier
-			ArrayList<String> zuege = new ArrayList();
+            return Richtung.Zurueck;
+        }
 
-			for (int i = 0; i < drehrichtungen.size(); i++) {
-				zuege.add(drehrichtungen.get(i).toString());
-			}
+        // Fall 1: Es wurden nur eine mögliche Drehrichtung gefunden.
+        // Dann: Wähle diese Richtung.
+        if (drehrichtungen.size() == 1) {
+            // DEBUG von hier
+            //super.schreib("Nur " + drehrichtungen.get(0).toString() + " möglich.");
+            // DEBUG bis hier
 
-			String listString = "";
+            return drehrichtungen.get(0);
+        }
 
-			for (String s : zuege) {
-				listString += s + ", ";
-			}
+        // Fall 2: Es wurden mehrere mögliche Drehrichtungen gefunden.
+        // Dann: Wähle per Zufall eine dieser Richtungen aus.
+        if (drehrichtungen.size() > 1) {
+            Random randomGenerator = new Random();
+            int index = randomGenerator.nextInt(drehrichtungen.size());
 
-			//super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
-			// DEBUG bis hier
+            // DEBUG von hier
+            ArrayList<String> zuege = new ArrayList();
 
-			return drehrichtungen.get(index);
-		}
-		
-		// Diese Ausgabe kann nie aufgerufen werden, Java fordert sie aber
-		return Richtung.Geradeaus;
-	}
+            for (int i = 0; i < drehrichtungen.size(); i++) {
+                zuege.add(drehrichtungen.get(i).toString());
+            }
+
+            String listString = "";
+
+            for (String s : zuege) {
+                listString += s + ", ";
+            }
+
+            //super.schreib("RAND: Möglich wären " + listString + "wähle " + drehrichtungen.get(index).toString() + ".");
+            // DEBUG bis hier
+            return drehrichtungen.get(index);
+        }
+
+        // Diese Ausgabe kann nie aufgerufen werden, Java fordert sie aber
+        return Richtung.Geradeaus;
+    }
 
     /**
      * Dreht den Hamster in eine durch drehrichtung gegebene Richtung
@@ -581,7 +604,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             return;
         }
 
-		// Bei Geradeaus müssen wir nichts tun
+        // Bei Geradeaus müssen wir nichts tun
         if (drehrichtung == Richtung.Rechts) {
             meinRechtsUm();
             return;
@@ -604,7 +627,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      */
     boolean istMauerDa(Richtung richtung) {
         // Überprüfe zunächst die Umgebung, damit die Werte aktuell sind.
-        scanTerritorium();
+        scanSichtfeld();
 
         // Prüfe für die gegebene Richtung, ob eine Mauer da ist.
         if (richtung == Richtung.Links) {
@@ -622,48 +645,49 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return false;
     }
 
-	/**
-	 * Zeigt ein Dialogfenster mit der Effizienz des Hamsters
-	 */
-	void zeigeEffizienz() {
-		int gefundeneKoerner = super.getAnzahlKoerner();
-		int zurueckgelasseneKoerner = Territorium.getAnzahlKoerner();
-		int gesamteKoerner = gefundeneKoerner+zurueckgelasseneKoerner;
-		int effizienz = Math.round(((float) gefundeneKoerner / (float) gesamteKoerner) * (float) 100);
-		int restladung = akku.gibLadung();
-		super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
-	}
+    /**
+     * Zeigt ein Dialogfenster mit der Effizienz des Hamsters
+     */
+    void zeigeEffizienz() {
+        int gefundeneKoerner = super.getAnzahlKoerner();
+        int zurueckgelasseneKoerner = Territorium.getAnzahlKoerner();
+        int gesamteKoerner = gefundeneKoerner + zurueckgelasseneKoerner;
+        int effizienz = Math.round(((float) gefundeneKoerner / (float) gesamteKoerner) * (float) 100);
+        int restladung = akku.gibLadung();
+        super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
+    }
 
-	/**
-	 * Reinigt das Feld mit dem Hamster
-	 */
+    /**
+     * Reinigt das Feld mit dem Hamster
+     */
     void reinige() {
         while (akku.hatLadung()) {
-        	// Prüfe, ob auf der aktuellen Kachel ein Korn liegt und nimm dieses ggf. auf
-        	nimmKornFallsDa();
-        	
-        	// Prüfe nun, ob damit alle Körner in dem Territorium aufgesammelt sind.
-        	if (Territorium.getAnzahlKoerner() == 0) {
-        		break;
-        	}
-        
-            ueberpruefeWeg();        	
-            umgebungAnalysieren();
-
-            //Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
-            if (istMauerDa(Richtung.Geradeaus)) {
-            	dreheHamsterInRichtung(findeZufaelligeRichtung());
+            // Prüfe nun, ob damit alle Körner in dem Territorium aufgesammelt sind.
+            if (Territorium.getAnzahlKoerner() == 0) {
+                break;
             }
+
             
+            //Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
+//            if (istMauerDa(Richtung.Geradeaus)) {
+//                dreheHamsterInRichtung(findeZufaelligeRichtung());
+//            }
+            scanSichtfeld();
             // Durch eine Drehung ist jetzt möglicherweise der Akku leer geworden, deswegen neu prüfen
             if (akku.hatLadung()) {
-	            // Es ist jetzt sicher nach vorne zu ziehen
-    	        meinVorUndSpeichern();
-    	    }
+               		ueberpruefeWegAufKoerner();
+                	ueberpruefeLetzte10Felder();
+                // Es ist jetzt sicher nach vorne zu ziehen
+                if (scannedTerritorium[2][1] == -1) {
+                    meinVorUndSpeichern();
+                } else {
+                    pruefeSichtfeld();
+                }
+            }
         }
-        
+
         // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
         // Das passiert, wenn der Akku leer ist, oder alle Körner gefunden wurden.
-		zeigeEffizienz();
+        zeigeEffizienz();
     }
 }
