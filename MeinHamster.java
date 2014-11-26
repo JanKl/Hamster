@@ -652,7 +652,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
             //Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
             if (istMauerDa(Richtung.Geradeaus)) {
-            	//dreheHamsterInRichtung(findeZufaelligeRichtung());
+            	dreheHamsterInRichtung(findeZufaelligeRichtung());
             }
             
             // Durch eine Drehung ist jetzt möglicherweise der Akku leer geworden, deswegen neu prüfen
