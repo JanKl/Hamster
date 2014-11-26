@@ -452,16 +452,22 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         scanTerritorium();
         pruefeUmgebung();
     }
+    /*
+     * Prüft die Umgebung auf spezielle Anordnungen der Mauern im Sichtfeld
+     * und reagiert auf diese entsprechend.
+     *
+     */
 
     void pruefeUmgebung() {
-        if (scannedTerritorium[1][2] == 1 && scannedTerritorium[2][1] == 1) {
+    	if (scannedTerritorium[1][2] == 1 && scannedTerritorium[2][1] == 1) {
             if (scannedTerritorium[3][2] == -1) {
                 meinRechtsUm();
             } else {
                 schrittZurueck(1);
             }
         }
-
+     
+    
         /*
          * Wenn auf den letzten 10 besuchten Feldern keine Körner mehr liegen,
          * soll der Hamster zufällig eine andere Richtung einschlagen. Wir er-
@@ -642,9 +648,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         
             ueberpruefeWeg();        	
             umgebungAnalysieren();
-            // Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
+            //Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
             if (istMauerDa(Richtung.Geradeaus)) {
-            	dreheHamsterInRichtung(findeZufaelligeRichtung());
+            	//dreheHamsterInRichtung(findeZufaelligeRichtung());
             }
             // Es ist jetzt sicher nach vorne zu ziehen
             meinVorUndSpeichern();
