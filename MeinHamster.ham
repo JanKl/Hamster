@@ -54,7 +54,7 @@ class MeinHamster extends Hamster {
 
             // Prüfe vor dem Zug, ob eine Mauer da ist, um eine Exception zu vermeiden
             if (istMauerDa(Richtung.Geradeaus)) {
-                super.schreib("Mauer vorne, Hamster will keine platte Nase.");
+               super.schreib("Mauer vorne, Hamster will keine platte Nase.");
             } else {
                 super.vor();
                 akku.reduziereLadung();
@@ -669,6 +669,7 @@ class MeinHamster extends Hamster {
      * Reinigt das Feld mit dem Hamster
      */
     void reinige() {
+    	scanSichtfeld();
         while (akku.hatLadung()) {
             // Prüfe nun, ob damit alle Körner in dem Territorium aufgesammelt sind.
             if (Territorium.getAnzahlKoerner() == 0) {
@@ -685,7 +686,7 @@ class MeinHamster extends Hamster {
                		ueberpruefeWegAufKoerner();
                 	ueberpruefeLetzte10Felder();
                 // Es ist jetzt sicher nach vorne zu ziehen
-                if (scannedTerritorium[2][1] == -1) {
+                if (!istMauerDa(Richtung.Geradeaus)) {
                 	//überprüft ob sich der Hamster in einem schmalen Gang befindet und keine Schlangenlinien laufen soll
                 	if  (scannedTerritorium[3][2] ==1&& scannedTerritorium[1][1]==1 && scannedTerritorium[2][0] ==1 && scannedTerritorium[3][1] ==-1){
 						meinVorUndSpeichern();
