@@ -12,7 +12,7 @@ class Akku {
 	 */
     Akku() {
     	akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
-    	akkuladungVoll=akkuladung;
+    	akkuladungVoll = akkuladung;
     }
     
     

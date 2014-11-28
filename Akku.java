@@ -12,7 +12,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 	 */
     Akku() {
     	akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
-    	akkuladungVoll=akkuladung;
+    	akkuladungVoll = akkuladung;
     }
     
     
