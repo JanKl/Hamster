@@ -483,6 +483,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
                 meinLinksUm();
           	}
         }
+       
         //Schlangenlinien
         else{
             if(letzteRichtung == Richtung.Links) {
@@ -660,6 +661,15 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
         return false;
     }
+    
+    void labyrinthModus(){
+     	if (scannedTerritorium[1][2]==1 && scannedTerritorium[1][1]==-1 &&scannedTerritorium[1][0]==1 && scannedTerritorium[3][2] == 1 && scannedTerritorium[3][1]==-1  && scannedTerritorium[3][0] ==1){
+     		dreheHamsterInRichtung(findeZufaelligeRichtung());
+     	}
+     	else if (scannedTerritorium[1][2]==1 && scannedTerritorium[1][1]==-1 &&scannedTerritorium[1][0]==1){
+     		
+     	}
+    }
 
     /**
      * Zeigt ein Dialogfenster mit der Effizienz des Hamsters
@@ -683,19 +693,20 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             if (Territorium.getAnzahlKoerner() == 0) {
                 break;
             }
-
-            
-            //Wenn geradeaus eine Mauer ist, dann müssen wir einen anderen Weg finden.
-//            if (istMauerDa(Richtung.Geradeaus)) {
-//                dreheHamsterInRichtung(findeZufaelligeRichtung());
-//            }
             // Durch eine Drehung ist jetzt möglicherweise der Akku leer geworden, deswegen neu prüfen
             if (akku.hatLadung()) {
                		ueberpruefeWegAufKoerner();
                 	ueberpruefeLetzte10Felder();
-                // Es ist jetzt sicher nach vorne zu ziehen
+               
                 if (!istMauerDa(Richtung.Geradeaus)) {
-                    meinVorUndSpeichern();
+                 	// Es ist jetzt sicher nach vorne zu ziehen
+                 	// "Labyrinth-Modus"
+                	 if (scannedTerritorium[2][0]==-1 &&((scannedTerritorium[1][2]==1 && scannedTerritorium[1][1]==-1 &&scannedTerritorium[1][0]==1)|| (scannedTerritorium[3][2] == 1 && scannedTerritorium[3][1]==-1  && scannedTerritorium[3][0] ==1))){
+        		 	 		meinVorUndSpeichern();
+        		 	 		dreheHamsterInRichtung(findeZufaelligeRichtung());
+        			 }else {
+                    	meinVorUndSpeichern();
+                     }
                 } else {
                     pruefeSichtfeld();
                 }
