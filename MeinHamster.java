@@ -463,21 +463,25 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     void pruefeSichtfeld() {
     
         //linksseitige Ecke & Tunnel
-        if (scannedTerritorium[1][2] ==1&& scannedTerritorium[3][1]==1) {
+        if (scannedTerritorium[1][2] ==1) {
             if (scannedTerritorium[3][2]==-1){
                 meinRechtsUm();
                 meinVorUndSpeichern();
-                meinRechtsUm();
+                if (scannedTerritorium[3][2] == -1){
+                	meinRechtsUm();
+               	}
             }
             else {
                 schrittZurueck(1);
             }
         } 
         //rechtsseitige Ecke
-        else if (scannedTerritorium[3][2]==1&& scannedTerritorium[1][1]==1){
+        else if (scannedTerritorium[3][2]==1){
             meinLinksUm();
             meinVorUndSpeichern();
-            meinLinksUm();
+            if (scannedTerritorium[1][2]==-1){
+                meinLinksUm();
+          	}
         }
         //Schlangenlinien
         else{
@@ -485,14 +489,18 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
                 if (scannedTerritorium[3][2]==-1){
                 	meinRechtsUm();
                 	meinVorUndSpeichern();
-                	meinRechtsUm();
+                	if (scannedTerritorium[3][2] == -1){
+                		meinRechtsUm();
+                	}
                 }
             }
             else if(letzteRichtung == Richtung.Rechts){
                 if (scannedTerritorium[1][2]==-1){
                 	meinLinksUm();
                 	meinVorUndSpeichern();
-                	meinLinksUm();
+                	if (scannedTerritorium[1][2]==-1){
+                		meinLinksUm();
+                	}
                 }
             }
             
@@ -687,20 +695,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
                 	ueberpruefeLetzte10Felder();
                 // Es ist jetzt sicher nach vorne zu ziehen
                 if (!istMauerDa(Richtung.Geradeaus)) {
-                	//überprüft ob sich der Hamster in einem schmalen Gang befindet und keine Schlangenlinien laufen soll
-                	if  (scannedTerritorium[3][2] ==1&& scannedTerritorium[1][1]==1 && scannedTerritorium[2][0] ==1 && scannedTerritorium[3][1] ==-1){
-						meinVorUndSpeichern();
-						meinRechtsUm();
-						meinVorUndSpeichern();
-    				}
-    				else if(scannedTerritorium[1][2] ==1&& scannedTerritorium[3][1]==1 && scannedTerritorium[2][0] ==1 && scannedTerritorium[1][1] ==-1){
-    					meinVorUndSpeichern();
-    					meinLinksUm();
-    					meinVorUndSpeichern();
-    				}
-    				else{
                     meinVorUndSpeichern();
-                    }
                 } else {
                     pruefeSichtfeld();
                 }
