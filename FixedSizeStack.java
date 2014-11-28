@@ -34,7 +34,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             koernerArray[0] = 1;
         } else {
             koernerArray[0] = 0;
-        } 
+        }
     }
 
     public int pop() {
@@ -83,10 +83,10 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         int anzahl = 0;
         if (numElements >= 6) {
             for (int i = 1; i <= 5; i++) {
-                    if (koernerArray[i] == 1) {
-                        anzahl++;
-                    }
+                if (koernerArray[i] == 1) {
+                    anzahl++;
                 }
+            }
             if (anzahl >= 4) {
                 koernerDa = true;
             }
@@ -95,6 +95,6 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     }
 
     void letztesKornGenommen() {
-        koernerArray[0]=2;
+        koernerArray[0] = 2;
     }
 }

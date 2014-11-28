@@ -1,0 +1,264 @@
+import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Territory;import de.hamster.model.HamsterException;import de.hamster.model.HamsterInitialisierungsException;import de.hamster.model.HamsterNichtInitialisiertException;import de.hamster.model.KachelLeerException;import de.hamster.model.MauerDaException;import de.hamster.model.MaulLeerException;import de.hamster.model.MouthEmptyException;import de.hamster.model.WallInFrontException;import de.hamster.model.TileEmptyException;import de.hamster.debugger.model.Hamster;class SichtfeldScanner {
+
+    /**
+     * In dieser Methode werden die Koordinaten für die umliegenden Felder
+     * anhand der aktuellen Hamster-Position und Blickrichtung bestimmt. Diese
+     * werden dann fortlaufend in einen Array gespeichert. Dieser Array enthält
+     * dann in [...][1] die entsprechende Spalte und in [...][0] die
+     * entsprechende Reihe. Die aufsteigenden Elemente sind im Blickfeld
+     * folgendermaßen angeordnet: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 (wobei 13
+     * die aktuelle Position des Hamsters ist)
+     *
+     * @return umgebung gibt den 2-dimensionalen Array zurück, der die relativen
+     * Koordinaten des Blickfeldes beinhaltet.
+     */
+    static int[][] getPositions(int hamsterPosReihe, int hamsterPosSpalte, int blickrichtung) {
+        int[][] umgebung = new int[16][2];
+
+        int speicherPos = 0;
+
+        switch (blickrichtung) {
+            //Nord
+            case 0:
+                speicherPos = 0;
+                for (int y = -2; y <= 0; y++) {
+                    for (int x = -2; x <= 2; x++) {
+                        speicherPos++;
+                        umgebung[speicherPos][1] = hamsterPosSpalte + x;
+                        umgebung[speicherPos][0] = hamsterPosReihe + y;
+                    }
+                }
+                break;
+            //Ost
+            case 1:
+                speicherPos = 0;
+                for (int x = +2; x >= 0; x--) {
+                    for (int y = -2; y <= 2; y++) {
+                        speicherPos++;
+                        umgebung[speicherPos][1] = hamsterPosSpalte + x;
+                        umgebung[speicherPos][0] = hamsterPosReihe + y;
+                    }
+                }
+                break;
+            //Süd
+            case 2:
+                speicherPos = 0;
+                for (int y = +2; y >= 0; y--) {
+                    for (int x = +2; x >= -2; x--) {
+                        speicherPos++;
+                        umgebung[speicherPos][1] = hamsterPosSpalte + x;
+                        umgebung[speicherPos][0] = hamsterPosReihe + y;
+
+                    }
+                }
+                break;
+            //West
+            case 3:
+                speicherPos = 0;
+                for (int x = -2; x <= 0; x++) {
+                    for (int y = +2; y >= -2; y--) {
+                        speicherPos++;
+                        umgebung[speicherPos][1] = hamsterPosSpalte + x;
+                        umgebung[speicherPos][0] = hamsterPosReihe + y;
+                    }
+                }
+                break;
+        }
+        return umgebung;
+    }
+
+    /**
+     * Scannt die Umgebung vom aktuellen Standpunkt aus, überprüft ob eine Mauer
+     * vorhanden ist und legt die ermittelten Werte in einem zweidimensionalen
+     * Array ab. -1 --> Keine Mauer auf dieser Koordinate 0 --> Keine Aussage
+     * über die Koordinate möglich 1 --> Auf dieser Koordinate befindet sich
+     * eine Mauer
+     *
+     * kleine Hilfestellung zu Koordinaten 0,0 1,0 2,0 3,0 4,0 0,1 1,1 2,1 3,1
+     * 4,1 0,2 1,3 Ham 3,2 4,2 ändere ich aber bei Gelegenheit noch zu dem
+     * "System" von getPosition()
+     *
+     * @return scannedTerritorium Gibt das gescannte Sichtfeld zurück
+     *     
+*/
+    static int[][] scanSichtfeld(int hamsterPosReihe, int hamsterPosSpalte, int blickrichtung) {
+        int[][] scannedTerritorium = new int[5][3];
+        // Den Array mit 0 initialisieren bzw. resetten
+        for (int i = 0; i < scannedTerritorium.length; i++) {
+            for (int j = 0; j < scannedTerritorium[0].length; j++) {
+                scannedTerritorium[i][j] = 0;
+            }
+        }
+        int[][] umgebung = getPositions(hamsterPosReihe, hamsterPosSpalte, blickrichtung);
+
+        // 0 0 0 0 0
+        // 0 0 0 0 0
+        // 0 X H 0 0 
+        if (Territorium.mauerDa(umgebung[12][0], umgebung[12][1])) {
+            scannedTerritorium[1][2] = 1;
+        } else {
+            scannedTerritorium[1][2] = -1;
+        }
+        // 0 0 0 0 0
+        // 0 X 0 0 0
+        // 0 0 H 0 0 
+        if (Territorium.mauerDa(umgebung[7][0], umgebung[7][1])) {
+            scannedTerritorium[1][1] = 1;
+        } else {
+            scannedTerritorium[1][1] = -1;
+        }
+
+        // 0 0 0 0 0
+        // 0 0 X 0 0
+        // 0 0 H 0 0 
+        if (Territorium.mauerDa(umgebung[8][0], umgebung[8][1])) {
+            scannedTerritorium[2][1] = 1;
+        } else {
+            scannedTerritorium[2][1] = -1;
+        }
+        // 0 0 0 0 0
+        // 0 0 0 X 0
+        // 0 0 H 0 0 
+        if (Territorium.mauerDa(umgebung[9][0], umgebung[9][1])) {
+            scannedTerritorium[3][1] = 1;
+        } else {
+            scannedTerritorium[3][1] = -1;
+        }
+
+        // 0 0 0 0 0
+        // 0 0 0 0 0
+        // 0 0 H X 0 
+        if (Territorium.mauerDa(umgebung[14][0], umgebung[14][1])) {
+            scannedTerritorium[3][2] = 1;
+        } else {
+            scannedTerritorium[3][2] = -1;
+        }
+        // 0 0 0 0 0
+        // 0 0 0 0 0
+        // X 0 H 0 0 
+        if (scannedTerritorium[1][2] == -1) {
+            if (Territorium.mauerDa(umgebung[11][0], umgebung[11][1])) {
+                scannedTerritorium[0][2] = 1;
+            } else {
+                scannedTerritorium[0][2] = -1;
+            }
+        } else {
+            scannedTerritorium[0][2] = 0;
+        }
+
+        // 0 0 0 0 0
+        // X 0 0 0 0
+        // 0 0 H 0 0 
+        if (scannedTerritorium[1][2] == -1 || scannedTerritorium[1][1] == -1) {
+            if (Territorium.mauerDa(umgebung[6][0], umgebung[6][1])) {
+                scannedTerritorium[0][1] = 1;
+            } else {
+                scannedTerritorium[0][1] = -1;
+            }
+        } else {
+            scannedTerritorium[0][1] = 0;
+        }
+
+        // X 0 0 0 0
+        // 0 0 0 0 0
+        // 0 0 H 0 0 
+        if (scannedTerritorium[1][1] == -1) {
+            if (Territorium.mauerDa(umgebung[1][0], umgebung[1][1])) {
+                scannedTerritorium[0][0] = 1;
+            } else {
+                scannedTerritorium[0][0] = -1;
+            }
+        } else {
+            scannedTerritorium[0][0] = 0;
+        }
+
+        // 0 X 0 0 0
+        // 0 0 0 0 0
+        // 0 0 H 0 0 
+        if (scannedTerritorium[1][1] == -1 || scannedTerritorium[2][1] == -1) {
+            if (Territorium.mauerDa(umgebung[2][0], umgebung[2][1])) {
+                scannedTerritorium[1][0] = 1;
+            } else {
+                scannedTerritorium[1][0] = -1;
+            }
+        } else {
+            scannedTerritorium[1][0] = 0;
+        }
+        // 0 0 X 0 0
+        // 0 0 0 0 0
+        // 0 0 H 0 0 
+        if (scannedTerritorium[2][1] == -1) {
+            if (Territorium.mauerDa(umgebung[3][0], umgebung[3][1])) {
+                scannedTerritorium[2][0] = 1;
+            } else {
+                scannedTerritorium[2][0] = -1;
+            }
+        } else {
+            scannedTerritorium[2][0] = 0;
+        }
+
+        // 0 0 0 X 0
+        // 0 0 0 0 0
+        // 0 0 H 0 0 
+        if (scannedTerritorium[2][1] == -1 || scannedTerritorium[3][1] == -1) {
+            if (Territorium.mauerDa(umgebung[4][0], umgebung[4][1])) {
+                scannedTerritorium[3][0] = 1;
+            } else {
+                scannedTerritorium[3][0] = -1;
+            }
+        } else {
+            scannedTerritorium[3][0] = 0;
+        }
+
+        // 0 0 0 0 X
+        // 0 0 0 0 0
+        // 0 0 H 0 0 
+        if (scannedTerritorium[3][1] == -1) {
+            if (Territorium.mauerDa(umgebung[5][0], umgebung[5][1])) {
+                scannedTerritorium[4][0] = 1;
+            } else {
+                scannedTerritorium[4][0] = -1;
+            }
+        } else {
+            scannedTerritorium[4][0] = 0;
+        }
+
+        // 0 0 0 0 0
+        // 0 0 0 0 X
+        // 0 0 H 0 0 
+        if (scannedTerritorium[3][1] == -1 || scannedTerritorium[3][2] == -1) {
+            if (Territorium.mauerDa(umgebung[10][0], umgebung[10][1])) {
+                scannedTerritorium[4][1] = 1;
+            } else {
+                scannedTerritorium[4][1] = -1;
+            }
+        } else {
+            scannedTerritorium[4][1] = 0;
+        }
+
+        // 0 0 0 0 0
+        // 0 0 0 0 0
+        // 0 0 H 0 X 
+        if (scannedTerritorium[3][2] == -1) {
+            if (Territorium.mauerDa(umgebung[15][0], umgebung[15][1])) {
+                scannedTerritorium[4][2] = 1;
+            } else {
+                scannedTerritorium[4][2] = -1;
+            }
+        } else {
+            scannedTerritorium[4][2] = 0;
+        }
+
+        return scannedTerritorium;
+
+    }
+
+    /**
+     * Belegt den Array für das gescannte Gebiet komplett mit 0.
+     *     
+*/
+    static void initialisiereScannedTerritorium() {
+
+    }
+
+}
