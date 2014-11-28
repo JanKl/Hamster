@@ -15,8 +15,14 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         initKoernerArray();
         initZwischenspeicher();
     }
+    /*
+     *Speichert die übergebenen Werte in einem Array ab. 
+     *@param blickrichtung Gibt die zu speichernde Blickrichtung an.
+     *@param reihe Gibt die Reihe der aktuellen Position an.
+     *@param spalte Gibt die Spalte der aktuellen Position an.
+     */
 
-    public void push(int num, int reihe, int spalte) {
+    public void push(int blickrichtung, int reihe, int spalte) {
         initZwischenspeicher();
         for (int i = 0; i < baseArray.length; i++) {
             zwischenspeicher[i + 2] = baseArray[i];
@@ -26,7 +32,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             baseArray[i] = zwischenspeicher[i + 1];
             koernerArray[i] = zwischenspeicher2[i + 1];
         }
-        baseArray[0] = num;
+        baseArray[0] = blickrichtung;
         if (numElements < baseArray.length) {
             numElements++;
         }
