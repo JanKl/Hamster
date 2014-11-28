@@ -40,7 +40,8 @@ class Akku {
     int gibLadung() {
     	return akkuladung;
     }
-        /**
+    
+    /**
      * Gibt die maximale Ladung aus (Ladung zu Beginn)
      * @return größe des Akkus
      */

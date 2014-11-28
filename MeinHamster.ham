@@ -402,7 +402,9 @@ class MeinHamster extends Hamster {
         int gesamteKoerner = gefundeneKoerner + zurueckgelasseneKoerner;
         int effizienz = Math.round(((float) gefundeneKoerner / (float) gesamteKoerner) * (float) 100);
         int restladung = akku.gibLadung();
-        super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
+        int startladung = akku.gibMaxLadung();
+        
+        super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten von " + startladung + ".");
     }
 
     /**

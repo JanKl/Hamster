@@ -129,7 +129,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     }
 
     /**
-     * Speichert den Weg der gelaufen wurde
+     * Speichert den Weg der gelaufen wurde.
      */
     void speichereWeg() {
         memory.push(super.getBlickrichtung(), super.getReihe(), super.getSpalte());
@@ -138,11 +138,10 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
     /**
      * Läuft eine angegebene Anzahl an Schritten zurück und speichert die dafür
-     * benötigten Schritte wieder.
+     * benötigten Schritte wieder in "memory" ab.
      *
      * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
      */
-    // TODO: Vor Bewegungen prüfen, ob Akku noch Ladung hat
     void schrittZurueck(int anzahl) {
         int[][] gespeicherteBlickrichtungen = new int[6][3];
         int blickrichtung;
@@ -394,14 +393,6 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return false;
     }
 
-    void labyrinthModus() {
-        if (scannedTerritorium[1][2] == 1 && scannedTerritorium[1][1] == -1 && scannedTerritorium[1][0] == 1 && scannedTerritorium[3][2] == 1 && scannedTerritorium[3][1] == -1 && scannedTerritorium[3][0] == 1) {
-            dreheHamsterInRichtung(findeZufaelligeRichtung());
-        } else if (scannedTerritorium[1][2] == 1 && scannedTerritorium[1][1] == -1 && scannedTerritorium[1][0] == 1) {
-
-        }
-    }
-
     /**
      * Zeigt ein Dialogfenster mit der Effizienz des Hamsters
      */
@@ -411,7 +402,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         int gesamteKoerner = gefundeneKoerner + zurueckgelasseneKoerner;
         int effizienz = Math.round(((float) gefundeneKoerner / (float) gesamteKoerner) * (float) 100);
         int restladung = akku.gibLadung();
-        super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten.");
+        int startladung = akku.gibMaxLadung();
+        
+        super.schreib("Von " + gesamteKoerner + " Körnern hat der Hamster " + gefundeneKoerner + " gefunden.\nZurückgelassen wurden " + zurueckgelasseneKoerner + " Körner. Das entspricht einer Effizienz von " + effizienz + "%.\nDie Restakkuladung sind " + restladung + " Einheiten von " + startladung + ".");
     }
 
     /**

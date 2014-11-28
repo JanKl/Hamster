@@ -40,7 +40,8 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     int gibLadung() {
     	return akkuladung;
     }
-        /**
+    
+    /**
      * Gibt die maximale Ladung aus (Ladung zu Beginn)
      * @return größe des Akkus
      */
