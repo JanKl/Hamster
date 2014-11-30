@@ -42,7 +42,12 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             koernerArray[0] = 0;
         }
     }
-
+     /*
+     *Gibt das oberste Element des Arrays aus und löscht dieses. 
+     *Außerdem wird das oberste Element des Arrays in dem gespeichert ist ob 
+     *Körner vorhanden sind gelöscht. 
+     *@return zwischenspeicher[0] gibt den Wert des obersten Elements aus.
+     */
     public int pop() {
         initZwischenspeicher();
         if (numElements == 0) {
@@ -60,7 +65,11 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         numElements--;
         return zwischenspeicher[0];
     }
-
+    
+	 /*
+     *Prüft ob auf der gespeicherten Strecke körner vorhanden sind.
+     *@return koernerAufStrecke Gibt zurück ob Körner vorhanden oder nicht.
+     */
     boolean pruefeKoernerAufStrecke() {
         boolean koernerAufStrecke = false;
         for (int i = 0; i < koernerArray.length; i++) {
@@ -70,20 +79,27 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         }
         return koernerAufStrecke;
     }
-
+	 /*
+     *Setzt den KoernerArray auf 0.
+     */
     void initKoernerArray() {
         for (int i = 0; i < koernerArray.length; i++) {
             koernerArray[i] = -1;
         }
     }
-
+	 /*
+     *Setzt die beiden Zwischenspeicher auf 0.
+     */
     void initZwischenspeicher() {
         for (int i = 0; i < zwischenspeicher.length; i++) {
             zwischenspeicher[i] = -1;
             zwischenspeicher2[i] = -1;
         }
     }
-
+	 /*
+     *Überprüft ob auf 4 der letzten 5 Feldern Körner vorhanden sind.
+     *@return koernerDa Gibt an ob auf mindestens 4 der letzten 5 Feldern Körner sind.
+     */
     boolean genuegendKoerner() {
         boolean koernerDa = false;
         int anzahl = 0;
@@ -99,7 +115,11 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         }
         return koernerDa;
     }
-
+ 	 /*
+     *Setzt den KoernerArray auf 2, falls das letzte Korn genommen wurde.
+     *Es wird dadurch vermieden, dass der Hamster meint es wären noch Körner
+     *vorhanden und deshalb umkehrt.
+     */
     void letztesKornGenommen() {
         koernerArray[0] = 2;
     }

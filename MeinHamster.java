@@ -491,7 +491,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
                 if (!istMauerDa(Richtung.Geradeaus)) {
                  	// Es ist jetzt sicher nach vorne zu ziehen
                  	
-                    // "Labyrinth-Modus"
+                    // "Labyrinth-Modus": Der Hamster bewegt sich zufällig durch einen schmalen Gang
                     if (scannedTerritorium[2][0] == -1 && ((scannedTerritorium[1][2] == 1 && scannedTerritorium[1][1] == -1 && scannedTerritorium[1][0] == 1) || (scannedTerritorium[3][2] == 1 && scannedTerritorium[3][1] == -1 && scannedTerritorium[3][0] == 1))) {
                     	if (!meinVorUndSpeichern()) {
                     		break;
