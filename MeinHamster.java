@@ -15,6 +15,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     int[][] scannedTerritorium = new int[5][3];
     Richtung letzteRichtung = Richtung.Links;
     String statistikData;
+    int zufaelligeEntscheidungen = 0;
 
     MeinHamster() {
         super();
@@ -42,7 +43,6 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
     void erstelleAkku() {
         akku = new Akku();
-        super.schreib("Felder: " + Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten());
     }
 
     void erstelleMemory() {
@@ -383,6 +383,8 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             drehrichtungen.add(Richtung.Rechts);
         }
 
+		zufaelligeEntscheidungen++;
+
         // Fall 0: Es wurden gar keine möglichen Drehrichtungen gefunden.
         // Dann: Drehe um und gehe zurück.
         if (drehrichtungen.size() == 0) {
@@ -534,14 +536,16 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
             }
         }
         
-        // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
-        // Das passiert, wenn der Akku leer ist, oder alle Körner gefunden wurden.
-        zeigeEffizienz();
-		statistikData += (akku.gibLadung()+(10-akku.gibLadung()%10)) + "\t" + Territorium.getAnzahlKoerner() + "\n";
+		//statistikData += (akku.gibLadung()+(10-akku.gibLadung()%10)) + "\t" + Territorium.getAnzahlKoerner() + "\n";
         
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Clipboard clipboard = toolkit.getSystemClipboard();
-		StringSelection strSel = new StringSelection(statistikData);
+		StringSelection strSel = new StringSelection(zufaelligeEntscheidungen + "");
 		clipboard.setContents(strSel, null);
+		
+        // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
+        // Das passiert, wenn der Akku leer ist, oder alle Körner gefunden wurden.
+        zeigeEffizienz();
+
     }
 }
