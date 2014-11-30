@@ -156,7 +156,6 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * @param anzahl Die Anzahl an Schritten, die zurück gegangen werden soll.
      * @returns false, wenn Operation wegen Akku oder Körnermangel nicht ausgeführt werden konnte, und true andernfalls.
      */
-
     boolean schrittZurueck(int anzahl) {
         int[][] gespeicherteBlickrichtungen = new int[6][3];
         int blickrichtung;
