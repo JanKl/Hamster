@@ -12,7 +12,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 	 */
     Akku() {
     	akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
-    	akkuladungVoll=akkuladung;
+    	akkuladungVoll = akkuladung;
     }
     
     
@@ -40,7 +40,8 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     int gibLadung() {
     	return akkuladung;
     }
-        /**
+    
+    /**
      * Gibt die maximale Ladung aus (Ladung zu Beginn)
      * @return größe des Akkus
      */

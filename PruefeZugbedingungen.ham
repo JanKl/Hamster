@@ -1,0 +1,14 @@
+/*class*//**
+ * Ermöglicht eine Prüfung von Vorbedingungen
+ */
+class PruefeZugbedingungen {
+
+	/**
+	 * Prüft, ob noch Akkuladung für mindestens einen Zug und Körner vorhanden sind.
+	 * @param akku Die Akku-Instanz des Hamsters
+	 * @returns true, wenn Zug möglich, false ansonsten.
+	 */
+    public static boolean istZugMoeglich(Akku akku) {
+        return (akku.hatLadung() && Territorium.getAnzahlKoerner() > 0);
+    }
+}

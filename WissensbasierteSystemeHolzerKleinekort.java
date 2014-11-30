@@ -2,6 +2,5 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
 public void main() {
 	hamster = new MeinHamster(0, 0, Hamster.OST, 0, Hamster.PINK);
-	hamster.schreib("Akkuladung: " + hamster.akku.gibLadung());
 	hamster.reinige();
 }}

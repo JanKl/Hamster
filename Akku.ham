@@ -12,7 +12,7 @@ class Akku {
 	 */
     Akku() {
     	akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
-    	akkuladungVoll=akkuladung;
+    	akkuladungVoll = akkuladung;
     }
     
     
@@ -40,7 +40,8 @@ class Akku {
     int gibLadung() {
     	return akkuladung;
     }
-        /**
+    
+    /**
      * Gibt die maximale Ladung aus (Ladung zu Beginn)
      * @return größe des Akkus
      */
