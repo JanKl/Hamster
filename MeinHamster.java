@@ -42,6 +42,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
 
     void erstelleAkku() {
         akku = new Akku();
+        super.schreib("Felder: " + Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten());
     }
 
     void erstelleMemory() {
