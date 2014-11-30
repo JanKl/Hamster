@@ -11,7 +11,8 @@ class Akku {
 	 * Initialisiert die Akkuladung mit der Territoriumsgröße.
 	 */
     Akku() {
-    	akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
+    	//akkuladung = 4 * Territorium.getAnzahlReihen() * Territorium.getAnzahlSpalten();
+    	akkuladung = 0;
     	akkuladungVoll = akkuladung;
     }
     
@@ -21,7 +22,8 @@ class Akku {
      * @return Ob noch Ladung vorhanden ist.
      */
     boolean hatLadung() {
-    	return akkuladung > 0;
+    	return true;
+    	//return akkuladung > 0;
     }
     
     /**
@@ -29,7 +31,7 @@ class Akku {
      * @return Die aktuelle Ladung nachdem der Schritt gemacht wurde.
      */
     int reduziereLadung() {
-    	return akkuladung -= 1;
+    	return akkuladung += 1;
     }
     
     

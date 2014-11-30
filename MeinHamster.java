@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.Random;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 /**
  * MeinHamster-Klasse von Kai Holzer und Jan Kleinekort Erweitert die
@@ -11,6 +14,7 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     FixedSizeStack memory;
     int[][] scannedTerritorium = new int[5][3];
     Richtung letzteRichtung = Richtung.Links;
+    String statistikData;
 
     MeinHamster() {
         super();
@@ -50,6 +54,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * @returns false, wenn Operation wegen Akku oder Körnermangel nicht ausgeführt werden konnte, und true andernfalls.
      */
     boolean meinVor() {
+    	// Ausgabe bei 90% gefundener Körner und wenn der Akku eigentlich leer wäre
+    	statistik();
+    
         if (PruefeZugbedingungen.istZugMoeglich(akku)) {
             // Ziehe zunächst ein Feld vor und reduziere den Ladezustand des Akkus
 
@@ -99,6 +106,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * @returns false, wenn Operation wegen Akku oder Körnermangel nicht ausgeführt werden konnte, und true andernfalls.
      */
     boolean meinLinksUm() {
+    	// Ausgabe bei 90% gefundener Körner und wenn der Akku eigentlich leer wäre
+    	statistik();
+    
         if (PruefeZugbedingungen.istZugMoeglich(akku)) {
             super.linksUm();
             akku.reduziereLadung();
@@ -116,6 +126,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
      * @returns false, wenn Operation wegen Akku oder Körnermangel nicht ausgeführt werden konnte, und true andernfalls.
      */
     boolean meinRechtsUm() {
+    	// Ausgabe bei 90% gefundener Körner und wenn der Akku eigentlich leer wäre
+    	statistik();
+    
         if (PruefeZugbedingungen.istZugMoeglich(akku)) {
         	// Abweichend vom Originalmodell kostet eine Rechtsdrehung gleich viel wie eine Linksdrehung.
             super.linksUm();
@@ -443,6 +456,12 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
         return false;
     }
 
+	void statistik() {
+		if (akku.gibLadung()%10 == 0) {
+			statistikData += akku.gibLadung() + "\t" + Territorium.getAnzahlKoerner() + "\n";
+		}
+	}
+
     /**
      * Zeigt ein Dialogfenster mit der Effizienz des Hamsters
      */
@@ -471,8 +490,9 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
     void reinige() {
         scannedTerritorium = SichtfeldScanner.scanSichtfeld(super.getReihe(), super.getSpalte(), super.getBlickrichtung());
         
-        while (true) {
+        statistikData = "";
         
+        while (true) {        
             // Prüfe nun, ob die Vorbedingungen noch gegeben sind.
             if (!PruefeZugbedingungen.istZugMoeglich(akku)) {
                 break;
@@ -512,9 +532,15 @@ import de.hamster.debugger.model.Territorium;import de.hamster.debugger.model.Te
                 }
             }
         }
-
+        
         // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
         // Das passiert, wenn der Akku leer ist, oder alle Körner gefunden wurden.
         zeigeEffizienz();
+		statistikData += (akku.gibLadung()+(10-akku.gibLadung()%10)) + "\t" + Territorium.getAnzahlKoerner() + "\n";
+        
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Clipboard clipboard = toolkit.getSystemClipboard();
+		StringSelection strSel = new StringSelection(statistikData);
+		clipboard.setContents(strSel, null);
     }
 }
