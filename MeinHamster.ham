@@ -461,7 +461,7 @@ class MeinHamster extends Hamster {
 
 	void statistik() {
 		if (akku.gibLadung()%10 == 0) {
-			statistikData += akku.gibLadung() + "\t" + Territorium.getAnzahlKoerner() + "\n";
+			statistikData += Territorium.getAnzahlKoerner() + "\n";
 		}
 	}
 
@@ -536,11 +536,11 @@ class MeinHamster extends Hamster {
             }
         }
         
-		//statistikData += (akku.gibLadung()+(10-akku.gibLadung()%10)) + "\t" + Territorium.getAnzahlKoerner() + "\n";
+		statistikData += "0\n";
         
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Clipboard clipboard = toolkit.getSystemClipboard();
-		StringSelection strSel = new StringSelection(zufaelligeEntscheidungen + "");
+		StringSelection strSel = new StringSelection(zufaelligeEntscheidungen + "\n" + statistikData);
 		clipboard.setContents(strSel, null);
 		
         // Wenn wir hier angelangt sind, sind wir aus der while-Schleife geflogen.
